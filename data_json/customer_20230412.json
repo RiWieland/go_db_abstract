@@ -1,0 +1,22 @@
+{
+    "firstName": "Alex",
+    "lastName": "Smith",
+    "age": 36,
+    "address":
+    {
+        "streetAddress": "Canal Street 3",
+        "city": "New Orleans",
+        "state": "Louisiana"
+    },
+    "phoneNumbers":
+    [
+        {
+          "type": "mobile",
+          "number": "001 555-1234"
+        },
+        {
+          "type": "mobile work",
+          "number": "646 834-4567"
+        }
+    ]
+}
