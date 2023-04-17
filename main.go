@@ -37,35 +37,31 @@ func main() {
 
 }
 
-func readCsvFile(filePath string) customer {
-	//var records customer
+func readCsvFile(filePath string) []customer {
+	records_customer := []customer{}
 	f, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal("Unable to read input file "+filePath, err)
 	}
 	defer f.Close()
 
-	fileExtension := path.Ext(filePath)
-	if fileExtension == ".csv" {
-		csvReader := csv.NewReader(f)
-		data_extract, err := csvReader.ReadAll()
-		if err != nil {
-			log.Fatal("Unable to parse file as CSV for "+filePath, err)
-		}
-		fmt.Println(data_extract)
-		_, data_content := data_extract[0], data_extract[1:]
-		for _, data := range data_content {
-			fmt.Println(data[0])
-			age_int, err := strconv.Atoi(data[0])
-			if err != nil {
-				log.Fatal("can not convert to int: ", age_int, err)
-			}
-
-			record_customer := customer{age_int, data[1], 7, data[2], "", ""}
-			fmt.Println(record_customer)
-		}
+	csvReader := csv.NewReader(f)
+	data_extract, err := csvReader.ReadAll()
+	if err != nil {
+		log.Fatal("Unable to parse file as CSV for "+filePath, err)
 	}
-	return record_customer
+	fmt.Println(data_extract)
+	_, data_content := data_extract[0], data_extract[1:]
+	for _, data := range data_content {
+		fmt.Println(data[0])
+		age_int, err := strconv.Atoi(data[0])
+		if err != nil {
+			log.Fatal("can not convert to int: ", age_int, err)
+		}
+		record_customer := customer{age_int, data[1], 7, data[2], "", ""}
+		fmt.Println(record_customer)
+	}
+	return records_customer
 }
 
 func readJsonFile(filePath string) customer {
