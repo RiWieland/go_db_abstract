@@ -58,8 +58,8 @@ func readCsvFile(filePath string) []customer {
 		if err != nil {
 			log.Fatal("can not convert to int: ", age_int, err)
 		}
-		record_customer := customer{age_int, data[1], 7, data[2], "", ""}
-		fmt.Println(record_customer)
+		records_customer = append(records_customer, customer{age_int, data[1], 7, data[2], "", ""})
+		fmt.Println(records_customer)
 	}
 	return records_customer
 }
