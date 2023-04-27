@@ -44,7 +44,7 @@ func main() {
 }
 
 func readCsvFile(filePath string) []customer {
-	records_customer := []customer{}
+	recordsCustomer := []customer{}
 	f, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal("Unable to read input file "+filePath, err)
@@ -64,37 +64,27 @@ func readCsvFile(filePath string) []customer {
 		if err != nil {
 			log.Fatal("can not convert to int: ", age_int, err)
 		}
-		records_customer = append(records_customer, customer{age_int, data[1], 7, customerAddress{"", "", ""}})
-		fmt.Println(records_customer)
+		recordsCustomer = append(recordsCustomer, customer{age_int, data[1], 7, customerAddress{"", "", ""}})
+		fmt.Println(recordsCustomer)
 	}
-	return records_customer
+	return recordsCustomer
 }
 
 func readJsonFile(filePath string) customer {
 
-	/*content, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		log.Fatal("Error when opening file: ", err)
-	}
-	customerJson := `{"firstName": "Alex", "lastName": "Smith", "age": 36, "address": {"streetAddress": "Canal Street 3", "city": "New Orleans", "state": "Louisiana"}}`
-	var result map[string]any
-
-	// Now let's unmarshall the data into `payload`
-	err := json.Unmarshal([]byte(customerJson), &records)
-	if err != nil {
-		log.Fatal("Error during Unmarshal(): ", err)
-	}*/
-	customerJson := `{"firstName": "Alex", "lastName": "Smith", "age": 36, "address": {"streetAddress": "Canal Street 3", "city": "New Orleans", "state": "Louisiana"}}`
-	//var customerReturn customer
-	//birdJson := `{"birds":{"pigeon":"likes to perch on rocks","eagle":"bird of prey"},"animals":"none"}`
+	customerJson := `{"firstName": "Alex", "lastName": "Smith", "age": 36, "address": {"street": "Canal Street 3", "city": "New Orleans", "state": "Louisiana"}}`
 	var records map[string]interface{} // -> if we dont know the structure of the json
 	err := json.Unmarshal([]byte(customerJson), &records)
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
 	}
-	customerReturn := customer{1, records["firstName"].(string) + records["lastName"].(string), records["age"].(int), customerAddress{records["streetAddress"].(string), records["city"].(string), records["state"].(string)}}
+	//build_str :=
+	for key, element := range records {
+		fmt.Println("Key:", key, "=>", "Element:", element)
+	}
 
-	fmt.Println(records["firstName"])
+	nestedMap := records["address"].(map[string]interface{})
+	customerReturn := customer{1, records["lastName"].(string), int(records["age"].(float64)), customerAddress{nestedMap["street"].(string), nestedMap["city"].(string), nestedMap["state"].(string)}}
 
 	return customerReturn
 }
