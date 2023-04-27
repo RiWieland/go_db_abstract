@@ -4,7 +4,8 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+
+	//"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -15,7 +16,7 @@ type data_reader interface {
 	reader()
 }
 
-type customer_address struct {
+type customerAddress struct {
 	street string
 	city   string
 	state  string
@@ -25,7 +26,7 @@ type customer struct {
 	id      int
 	name    string
 	age     int
-	address customer_address
+	address customerAddress
 }
 
 func main() {
@@ -63,24 +64,37 @@ func readCsvFile(filePath string) []customer {
 		if err != nil {
 			log.Fatal("can not convert to int: ", age_int, err)
 		}
-		records_customer = append(records_customer, customer{age_int, data[1], 7, customer_address{"", "", ""}})
+		records_customer = append(records_customer, customer{age_int, data[1], 7, customerAddress{"", "", ""}})
 		fmt.Println(records_customer)
 	}
 	return records_customer
 }
 
 func readJsonFile(filePath string) customer {
-	var records customer
-	content, err := ioutil.ReadFile(filePath)
+
+	/*content, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Fatal("Error when opening file: ", err)
 	}
+	customerJson := `{"firstName": "Alex", "lastName": "Smith", "age": 36, "address": {"streetAddress": "Canal Street 3", "city": "New Orleans", "state": "Louisiana"}}`
+	var result map[string]any
 
 	// Now let's unmarshall the data into `payload`
-	err = json.Unmarshal(content, &records)
+	err := json.Unmarshal([]byte(customerJson), &records)
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}*/
+	customerJson := `{"firstName": "Alex", "lastName": "Smith", "age": 36, "address": {"streetAddress": "Canal Street 3", "city": "New Orleans", "state": "Louisiana"}}`
+	//var customerReturn customer
+	//birdJson := `{"birds":{"pigeon":"likes to perch on rocks","eagle":"bird of prey"},"animals":"none"}`
+	var records map[string]interface{} // -> if we dont know the structure of the json
+	err := json.Unmarshal([]byte(customerJson), &records)
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
 	}
+	customerReturn := customer{1, records["firstName"].(string) + records["lastName"].(string), records["age"].(int), customerAddress{records["streetAddress"].(string), records["city"].(string), records["state"].(string)}}
 
-	return records
+	fmt.Println(records["firstName"])
+
+	return customerReturn
 }
