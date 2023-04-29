@@ -48,14 +48,13 @@ func main() {
 	jsonRawStorage.path = "data_json/customer_20230412.json"
 	jsonRawStorage.fileFormat = path.Ext(jsonRawStorage.path)
 
-	file, err := os.Create("sqlite-database.db") // Create SQLite file
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	file.Close()
-	log.Println("sqlite-database.db initialized")
+	nameSQLiteFile := "sqlite-database.db" // Create SQLite file
+
+	initializeDb(nameSQLiteFile)
 	sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db") // Open the created SQLite File
-	createTable(sqliteDatabase)                                      // Create Database Tables
+
+	defer sqliteDatabase.Close() // Defer Closing the database
+	createTable(sqliteDatabase)  // Create Database Tables
 
 	filePath := "data_csv/customer_20230415.csv"
 	fileExtension := path.Ext(jsonRawStorage.path)
@@ -115,8 +114,17 @@ func readJsonFile(filePath string) customer {
 	return customerReturn
 }
 
+func initializeDb(name string) {
+	file, err := os.Create(name) // Create SQLite file
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	file.Close()
+	log.Println("sqlite-database.db initialized")
+}
+
 func createTable(db *sql.DB) {
-	createCustomerTableSQL := `CREATE TABLE student (
+	createCustomerTableSQL := `CREATE TABLE IF NOT EXISTS CUSTOMER (
 		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
 		"firstName" TEXT,
 		"lastName" TEXT,
