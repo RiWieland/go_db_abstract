@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
+
 	//"io/ioutil"
 	"log"
 	"os"
@@ -12,8 +14,19 @@ import (
 	"strconv"
 )
 
-type data_reader interface {
+type handler interface {
+	//logger()
+	writer()
 	reader()
+}
+
+type database struct {
+}
+
+type rawStorage struct {
+	path       string
+	fileFormat string
+	totalSize  float64
 }
 
 type customerAddress struct {
@@ -30,8 +43,11 @@ type customer struct {
 }
 
 func main() {
+	var jsonRawStorage rawStorage
+	jsonRawStorage.path = "data_json/customer_20230412.json"
+	jsonRawStorage.fileFormat = path.Ext(jsonRawStorage.path)
+
 	filePath := "data_csv/customer_20230415.csv"
-	filePathJson := "data_json/customer_20230412.json"
 	fileExtension := path.Ext(filePathJson)
 	if fileExtension == ".csv" {
 		//extract := readCsvFile(filePath)
