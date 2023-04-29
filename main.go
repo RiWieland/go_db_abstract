@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
@@ -47,8 +48,17 @@ func main() {
 	jsonRawStorage.path = "data_json/customer_20230412.json"
 	jsonRawStorage.fileFormat = path.Ext(jsonRawStorage.path)
 
+	file, err := os.Create("sqlite-database.db") // Create SQLite file
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	file.Close()
+	log.Println("sqlite-database.db initialized")
+	sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db") // Open the created SQLite File
+	createTable(sqliteDatabase)                                      // Create Database Tables
+
 	filePath := "data_csv/customer_20230415.csv"
-	fileExtension := path.Ext(filePathJson)
+	fileExtension := path.Ext(jsonRawStorage.path)
 	if fileExtension == ".csv" {
 		//extract := readCsvFile(filePath)
 		extract_json := readJsonFile(filePath)
@@ -103,4 +113,26 @@ func readJsonFile(filePath string) customer {
 	customerReturn := customer{1, records["lastName"].(string), int(records["age"].(float64)), customerAddress{nestedMap["street"].(string), nestedMap["city"].(string), nestedMap["state"].(string)}}
 
 	return customerReturn
+}
+
+func createTable(db *sql.DB) {
+	createCustomerTableSQL := `CREATE TABLE student (
+		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
+		"firstName" TEXT,
+		"lastName" TEXT,
+		"name" TEXT,
+		"age" TEXT
+		"address" TEXT		
+		"streetAddress" TEXT,
+        "city" TEXT,
+        "state" "Louisiana" TEXT
+	  );` // SQL Statement for Create Table
+
+	log.Println("Create CUSTOMER table...")
+	statement, err := db.Prepare(createCustomerTableSQL) // Prepare SQL Statement
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	statement.Exec() // Execute SQL Statements
+	log.Println("CUSTOMER table created")
 }
