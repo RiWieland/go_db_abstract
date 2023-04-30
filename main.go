@@ -44,13 +44,14 @@ type customer struct {
 }
 
 func main() {
+
 	var jsonRawStorage rawStorage
 	var csvRawStorage rawStorage
-	jsonRawStorage.path = "data_json/customer_20230412.json"
-	jsonRawStorage.fileFormat = path.Ext(jsonRawStorage.path)
+	jsonRawStorage.path = "data_json/"
+	jsonRawStorage.fileFormat = ".json"
 
 	csvRawStorage.path = "data_csv/customer_20230415.csv"
-	jsonRawStorage.fileFormat = path.Ext(csvRawStorage.path)
+	csvRawStorage.fileFormat = path.Ext(csvRawStorage.path)
 
 	nameSQLiteFile := "sqlite-database.db" // Create SQLite file
 
@@ -60,13 +61,13 @@ func main() {
 	defer sqliteDatabase.Close() // Defer Closing the database
 	createTable(sqliteDatabase)  // Create Database Tables
 
-	fileExtension := path.Ext(jsonRawStorage.path)
+	fileExtension := path.Ext(jsonRawStorage.fileFormat)
 	if fileExtension == ".csv" {
 		//extract := readCsvFile(filePath)
-		extract_json := jsonRawStorage.reader()
+		extract_json := csvRawStorage.reader("test")
 		fmt.Println(extract_json)
 	} else if fileExtension == ".json" {
-		extract_json := jsonRawStorage.reader()
+		extract_json := jsonRawStorage.reader("/customer_20230412.json")
 		fmt.Println(extract_json)
 	}
 }
@@ -98,9 +99,10 @@ func readCsvFile(filePath string) []customer {
 	return recordsCustomer
 }
 
-func (r rawStorage) reader(fileNames ...string) customer {
-
-	customerJson, err := os.Open(r.path)
+func (r rawStorage) reader(fileNames string) customer {
+	filePath := r.path + fileNames
+	fmt.Println(fileNames)
+	customerJson, err := os.Open(filePath)
 	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
@@ -123,6 +125,14 @@ func (r rawStorage) reader(fileNames ...string) customer {
 	customerReturn := customer{1, records["lastName"].(string), int(records["age"].(float64)), customerAddress{nestedMap["streetAddress"].(string), nestedMap["city"].(string), nestedMap["state"].(string)}}
 
 	return customerReturn
+}
+
+func (r rawStorage) writer(filename string, dataCustomer string) {
+
+	file, _ := json.MarshalIndent(dataCustomer, "", " ")
+	filePath := r.path + filename
+	_ = ioutil.WriteFile(filePath, file, 0644)
+
 }
 
 func initializeDb(name string) {
