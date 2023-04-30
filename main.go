@@ -45,9 +45,12 @@ type customer struct {
 
 func main() {
 	var jsonRawStorage rawStorage
-
+	var csvRawStorage rawStorage
 	jsonRawStorage.path = "data_json/customer_20230412.json"
 	jsonRawStorage.fileFormat = path.Ext(jsonRawStorage.path)
+
+	csvRawStorage.path = "data_csv/customer_20230415.csv"
+	jsonRawStorage.fileFormat = path.Ext(csvRawStorage.path)
 
 	nameSQLiteFile := "sqlite-database.db" // Create SQLite file
 
@@ -57,7 +60,6 @@ func main() {
 	defer sqliteDatabase.Close() // Defer Closing the database
 	createTable(sqliteDatabase)  // Create Database Tables
 
-	//filePath := "data_csv/customer_20230415.csv"
 	fileExtension := path.Ext(jsonRawStorage.path)
 	if fileExtension == ".csv" {
 		//extract := readCsvFile(filePath)
@@ -103,11 +105,10 @@ func (r rawStorage) reader(fileNames ...string) customer {
 	if err != nil {
 		fmt.Println(err)
 	}
-	//defer customerJson.Close()
+	defer customerJson.Close()
 
 	byteJson, _ := ioutil.ReadAll(customerJson)
 
-	//customerJson := `{"firstName": "Alex", "lastName": "Smith", "age": 36, "address": {"street": "Canal Street 3", "city": "New Orleans", "state": "Louisiana"}}`
 	var records map[string]interface{} // -> if we dont know the structure of the json
 	err = json.Unmarshal(byteJson, &records)
 	if err != nil {
