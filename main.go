@@ -8,7 +8,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 
-	//"io/ioutil"
+	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -45,6 +45,7 @@ type customer struct {
 
 func main() {
 	var jsonRawStorage rawStorage
+
 	jsonRawStorage.path = "data_json/customer_20230412.json"
 	jsonRawStorage.fileFormat = path.Ext(jsonRawStorage.path)
 
@@ -56,14 +57,14 @@ func main() {
 	defer sqliteDatabase.Close() // Defer Closing the database
 	createTable(sqliteDatabase)  // Create Database Tables
 
-	filePath := "data_csv/customer_20230415.csv"
+	//filePath := "data_csv/customer_20230415.csv"
 	fileExtension := path.Ext(jsonRawStorage.path)
 	if fileExtension == ".csv" {
 		//extract := readCsvFile(filePath)
-		extract_json := readJsonFile(filePath)
+		extract_json := jsonRawStorage.reader()
 		fmt.Println(extract_json)
 	} else if fileExtension == ".json" {
-		extract_json := readJsonFile(filePath)
+		extract_json := jsonRawStorage.reader()
 		fmt.Println(extract_json)
 	}
 }
@@ -95,11 +96,20 @@ func readCsvFile(filePath string) []customer {
 	return recordsCustomer
 }
 
-func readJsonFile(filePath string) customer {
+func (r rawStorage) reader(fileNames ...string) customer {
 
-	customerJson := `{"firstName": "Alex", "lastName": "Smith", "age": 36, "address": {"street": "Canal Street 3", "city": "New Orleans", "state": "Louisiana"}}`
+	customerJson, err := os.Open(r.path)
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	//defer customerJson.Close()
+
+	byteJson, _ := ioutil.ReadAll(customerJson)
+
+	//customerJson := `{"firstName": "Alex", "lastName": "Smith", "age": 36, "address": {"street": "Canal Street 3", "city": "New Orleans", "state": "Louisiana"}}`
 	var records map[string]interface{} // -> if we dont know the structure of the json
-	err := json.Unmarshal([]byte(customerJson), &records)
+	err = json.Unmarshal(byteJson, &records)
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
 	}
@@ -109,7 +119,7 @@ func readJsonFile(filePath string) customer {
 	}
 
 	nestedMap := records["address"].(map[string]interface{})
-	customerReturn := customer{1, records["lastName"].(string), int(records["age"].(float64)), customerAddress{nestedMap["street"].(string), nestedMap["city"].(string), nestedMap["state"].(string)}}
+	customerReturn := customer{1, records["lastName"].(string), int(records["age"].(float64)), customerAddress{nestedMap["streetAddress"].(string), nestedMap["city"].(string), nestedMap["state"].(string)}}
 
 	return customerReturn
 }
