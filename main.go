@@ -22,6 +22,9 @@ type handler interface {
 }
 
 type database struct {
+	nameSQLiteFile string
+	path           string
+	instance       *sql.DB
 }
 
 type rawStorage struct {
@@ -53,15 +56,15 @@ func main() {
 	csvRawStorage.path = "data_csv/customer_20230415.csv"
 	csvRawStorage.fileFormat = path.Ext(csvRawStorage.path)
 
-	nameSQLiteFile := "sqlite-database.db" // Create SQLite file
+	var db database
+	db.path = "db/"
+	db.nameSQLiteFile = "sqlite-database.db"
+	db.instance = initializeDb(db)
 
-	initializeDb(nameSQLiteFile)
-	sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db") // Open the created SQLite File
+	defer db.instance.Close() // Defer Closing the database
+	createTable(db.instance)  // Create Database Tables
 
-	defer sqliteDatabase.Close() // Defer Closing the database
-	createTable(sqliteDatabase)  // Create Database Tables
-
-	fileExtension := path.Ext(jsonRawStorage.fileFormat)
+	fileExtension := jsonRawStorage.fileFormat
 	if fileExtension == ".csv" {
 		//extract := readCsvFile(filePath)
 		extract_json := csvRawStorage.reader("test")
@@ -135,13 +138,20 @@ func (r rawStorage) writer(filename string, dataCustomer string) {
 
 }
 
-func initializeDb(name string) {
-	file, err := os.Create(name) // Create SQLite file
+func initializeDb(db database) *sql.DB {
+	pathSQLiteFile := db.path + db.nameSQLiteFile
+	file, err := os.Create(pathSQLiteFile) // Create SQLite file
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	file.Close()
 	log.Println("sqlite-database.db initialized")
+	sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db") // Open the created SQLite File
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	return sqliteDatabase
 }
 
 func createTable(db *sql.DB) {
