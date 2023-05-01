@@ -6,13 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 
-	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
-
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
 	"strconv"
+
+	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 )
 
 type handler interface {
@@ -130,6 +130,34 @@ func (r rawStorage) reader(fileNames string) customer {
 	return customerReturn
 }
 
+func (db database) reader(tableName []string) []customer {
+
+	var records []customer
+	rows, err := db.instance.Query("SELECT * FROM userinfo")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for rows.Next() {
+
+		var id int
+		var firstName string
+		var lastName string
+		var age int
+		var address string
+		var streetAddress string
+		var city string
+		var state string
+		err = rows.Scan(&id, &firstName, &lastName, &age, &address, &streetAddress, &city, &state)
+		record := customer{id, firstName + lastName, age, customerAddress{streetAddress, city, state}}
+		records = append(records, record)
+	}
+	rows.Close() //good habit to close
+
+	return records
+
+}
+
 func (r rawStorage) writer(filename string, dataCustomer string) {
 
 	file, _ := json.MarshalIndent(dataCustomer, "", " ")
@@ -159,7 +187,6 @@ func createTable(db *sql.DB) {
 		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
 		"firstName" TEXT,
 		"lastName" TEXT,
-		"name" TEXT,
 		"age" TEXT
 		"address" TEXT		
 		"streetAddress" TEXT,
