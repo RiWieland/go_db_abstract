@@ -62,7 +62,7 @@ func main() {
 	db.instance = initializeDb(db)
 
 	defer db.instance.Close() // Defer Closing the database
-	createTable(db.instance)  // Create Database Tables
+	createRaw(db.instance)    // Create Database Tables
 
 	fileExtension := jsonRawStorage.fileFormat
 	if fileExtension == ".csv" {
@@ -182,7 +182,22 @@ func initializeDb(db database) *sql.DB {
 	return sqliteDatabase
 }
 
-func createTable(db *sql.DB) {
+type RawTables struct {
+	columns []string
+}
+
+type Tables struct {
+	columnsType map[string]string
+}
+
+// Create Statement for RawTables
+type creater interface {
+	// usage of interface: for raw the Datatype needs conversion, for tables it does not
+	write()
+	reade()
+}
+
+func createRaw(db *sql.DB) {
 	createCustomerTableSQL := `CREATE TABLE IF NOT EXISTS CUSTOMER (
 		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
 		"firstName" TEXT,
