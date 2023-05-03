@@ -56,7 +56,7 @@ func main() {
 	db.instance = initializeDb(db)
 
 	defer db.instance.Close() // Defer Closing the database
-	createRaw(db.instance)    // Create Database Tables
+	createTable(db.instance)  // Create Database Tables
 
 	fileExtension := jsonRawStorage.fileFormat
 	if fileExtension == ".csv" {
@@ -190,6 +190,34 @@ type database struct {
 	instance       *sql.DB
 }
 
+/*
+how to structure classes for different db's
+- Database (abstract)
+- - Postgres (or abstract on this level)
+- - SQLite
+- - ...
+
+- methods for DB: (interfaces)
+- - execute
+- - prepare
+- - read/ query
+
+
+Classes
+Tables: (tables abstract?):
+- LandingTables
+- tables
+- views
+
+methods:
+- insert
+- create
+- merge
+- update
+
+
+*/
+// does every database needs own execute?
 func (db database) execute(sqlStatement string) {
 
 	log.Println("pereparing db access...")
@@ -201,23 +229,31 @@ func (db database) execute(sqlStatement string) {
 	log.Println("Statement executed")
 }
 
-// special tables need to inherit execute from the database
-type RawTables struct {
-	columns []string
+// Every different databse systems needs individual function for creating Statement
+// -> different sql languages
+func (db database) prepareSql() {
+
 }
 
-type Tables struct {
+// special tables need to inherit execute from the database
+type view struct {
+	columns map[string]string
+}
+
+type table struct {
+	// types included + keys
 	columnsType map[string]string
 }
 
 // Create Statement for RawTables
-type creater interface {
+type dbOperation interface {
 	// usage of interface: for raw the Datatype needs conversion, for tables it does not
-	write()
-	read()
+	createTable()
+	insertTable()
 }
 
-func createRaw(db *sql.DB) {
+// pointer for db?
+func (t table) createTable(db *sql.DB) {
 	createCustomerTableSQL := `CREATE TABLE IF NOT EXISTS CUSTOMER (
 		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
 		"firstName" TEXT,
