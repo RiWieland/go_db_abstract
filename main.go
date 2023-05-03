@@ -21,12 +21,6 @@ type handler interface {
 	reader()
 }
 
-type database struct {
-	nameSQLiteFile string
-	path           string
-	instance       *sql.DB
-}
-
 type rawStorage struct {
 	path       string
 	fileFormat string
@@ -182,6 +176,32 @@ func initializeDb(db database) *sql.DB {
 	return sqliteDatabase
 }
 
+// Abstract Class:
+// Tables:
+// -> uses method "write to db"
+
+// Sub Classes:
+// special tables;
+// implement interfaces for specific types
+
+type database struct {
+	nameSQLiteFile string
+	path           string
+	instance       *sql.DB
+}
+
+func (db database) execute(sqlStatement string) {
+
+	log.Println("pereparing db access...")
+	statement, err := db.instance.Prepare(sqlStatement) // Prepare SQL Statement
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	statement.Exec() // Execute SQL Statements
+	log.Println("Statement executed")
+}
+
+// special tables need to inherit execute from the database
 type RawTables struct {
 	columns []string
 }
@@ -194,7 +214,7 @@ type Tables struct {
 type creater interface {
 	// usage of interface: for raw the Datatype needs conversion, for tables it does not
 	write()
-	reade()
+	read()
 }
 
 func createRaw(db *sql.DB) {
