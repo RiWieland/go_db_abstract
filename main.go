@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"io/ioutil"
 	"log"
@@ -15,6 +16,56 @@ import (
 	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 )
 
+/*
+To-Do:
+- add type mapping: then maps for tables does not need anymore "string"
+- for function "prepareSQL":
+- - should work for different types (view, table) -> interface?
+- - need type of database for different SQL styles
+
+*/
+/*
+how to structure classes for different db's
+- Database (abstract)
+- - Postgres (or abstract on this level)
+- - SQLite
+- - ...
+
+- methods for DB: (interfaces)
+- - execute
+- - prepare
+- - read/ query
+
+
+Classes
+Tables: (tables abstract?):
+- LandingTables
+- tables
+- views
+
+methods:
+- insert
+- create
+- merge
+- update
+
+Datatypes
+- Postgres
+	- VARCHAR
+	- STRING
+	- ...
+
+// Abstract Class:
+// Tables:
+// -> uses method "write to db"
+
+// Sub Classes:
+// special tables;
+// implement interfaces for specific types
+
+
+
+*/
 type handler interface {
 	//logger()
 	writer()
@@ -54,10 +105,22 @@ func main() {
 	db.path = "db/"
 	db.nameSQLiteFile = "sqlite-database.db"
 	db.instance = initializeDb(db)
-
 	defer db.instance.Close() // Defer Closing the database
-	createTable(db.instance)  // Create Database Tables
 
+	// table:
+	var customer table
+	customer.name = "Customer"
+	customer.columnsType = map[string]string{
+		"id":            "integer",
+		"firstName":     "TEXT",
+		"lastName":      "TEXT",
+		"age":           "TEXT",
+		"address":       "TEXT",
+		"streetAddress": "TEXT",
+		"city":          "TEXT",
+		"state":         "TEXT"}
+
+	db.prepareSql(customer)
 	fileExtension := jsonRawStorage.fileFormat
 	if fileExtension == ".csv" {
 		//extract := readCsvFile(filePath)
@@ -176,47 +239,13 @@ func initializeDb(db database) *sql.DB {
 	return sqliteDatabase
 }
 
-// Abstract Class:
-// Tables:
-// -> uses method "write to db"
-
-// Sub Classes:
-// special tables;
-// implement interfaces for specific types
-
 type database struct {
 	nameSQLiteFile string
 	path           string
 	instance       *sql.DB
+	dbType         string
 }
 
-/*
-how to structure classes for different db's
-- Database (abstract)
-- - Postgres (or abstract on this level)
-- - SQLite
-- - ...
-
-- methods for DB: (interfaces)
-- - execute
-- - prepare
-- - read/ query
-
-
-Classes
-Tables: (tables abstract?):
-- LandingTables
-- tables
-- views
-
-methods:
-- insert
-- create
-- merge
-- update
-
-
-*/
 // does every database needs own execute?
 func (db database) execute(sqlStatement string) {
 
@@ -231,8 +260,15 @@ func (db database) execute(sqlStatement string) {
 
 // Every different databse systems needs individual function for creating Statement
 // -> different sql languages
-func (db database) prepareSql() {
+func (db database) prepareSql(t table) {
+	var sqlStatement strings.Builder
 
+	sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.name + " ( ")
+
+	for key, element := range t.columnsType {
+		sqlStatement.WriteString(key + " " + element + ", ")
+	}
+	fmt.Println(sqlStatement.String())
 }
 
 // special tables need to inherit execute from the database
@@ -242,7 +278,10 @@ type view struct {
 
 type table struct {
 	// types included + keys
+	name        string
 	columnsType map[string]string
+	//primaryKey string
+	// not null
 }
 
 // Create Statement for RawTables
@@ -253,7 +292,8 @@ type dbOperation interface {
 }
 
 // pointer for db?
-func (t table) createTable(db *sql.DB) {
+func (t table) createTable(db *sql.DB, columnsType map[string]string) {
+
 	createCustomerTableSQL := `CREATE TABLE IF NOT EXISTS CUSTOMER (
 		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
 		"firstName" TEXT,
@@ -273,3 +313,16 @@ func (t table) createTable(db *sql.DB) {
 	statement.Exec() // Execute SQL Statements
 	log.Println("CUSTOMER table created")
 }
+
+/*
+	createCustomerTableSQL := `CREATE TABLE IF NOT EXISTS CUSTOMER (
+		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+		"firstName" TEXT,
+		"lastName" TEXT,
+		"age" TEXT
+		"address" TEXT
+		"streetAddress" TEXT,
+        "city" TEXT,
+        "state" "Louisiana" TEXT
+	  );` // SQL Statement for Create Table
+*/
