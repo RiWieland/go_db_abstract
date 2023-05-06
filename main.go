@@ -22,6 +22,8 @@ To-Do:
 - for function "prepareSQL":
 - - should work for different types (view, table) -> interface?
 - - need type of database for different SQL styles
+- - implement type mapping from Go-Types to DB-types
+- table-struct: how to best create table columns and types?
 
 */
 /*
@@ -110,15 +112,9 @@ func main() {
 	// table:
 	var customer table
 	customer.name = "Customer"
-	customer.columnsType = map[string]string{
-		"id":            "integer",
-		"firstName":     "TEXT",
-		"lastName":      "TEXT",
-		"age":           "TEXT",
-		"address":       "TEXT",
-		"streetAddress": "TEXT",
-		"city":          "TEXT",
-		"state":         "TEXT"}
+
+	customer.columnName = []string{"id", "firstname", "lastName", "age", "address", "streetAddress", "city", "state"}
+	customer.columnsType = []string{"integer", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}
 
 	db.prepareSql(customer)
 	fileExtension := jsonRawStorage.fileFormat
@@ -263,23 +259,24 @@ func (db database) execute(sqlStatement string) {
 func (db database) prepareSql(t table) {
 	var sqlStatement strings.Builder
 
-	sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.name + " ( ")
+	sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.name + "( ")
 
 	for key, element := range t.columnsType {
-		sqlStatement.WriteString(key + " " + element + ", ")
+		sqlStatement.WriteString(t.columnName[key] + " " + element + ", ")
 	}
 	fmt.Println(sqlStatement.String())
 }
 
 // special tables need to inherit execute from the database
 type view struct {
-	columns map[string]string
+	columns []interface{}
 }
 
 type table struct {
 	// types included + keys
 	name        string
-	columnsType map[string]string
+	columnName  []string
+	columnsType []string
 	//primaryKey string
 	// not null
 }
