@@ -272,15 +272,6 @@ type view struct {
 	columns []interface{}
 }
 
-type table struct {
-	// types included + keys
-	name        string
-	columnName  []string
-	columnsType []string
-	//primaryKey string
-	// not null
-}
-
 // Create Statement for RawTables
 type dbOperation interface {
 	// usage of interface: for raw the Datatype needs conversion, for tables it does not
@@ -289,27 +280,6 @@ type dbOperation interface {
 }
 
 // pointer for db?
-func (t table) createTable(db *sql.DB, columnsType map[string]string) {
-
-	createCustomerTableSQL := `CREATE TABLE IF NOT EXISTS CUSTOMER (
-		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
-		"firstName" TEXT,
-		"lastName" TEXT,
-		"age" TEXT
-		"address" TEXT		
-		"streetAddress" TEXT,
-        "city" TEXT,
-        "state" "Louisiana" TEXT
-	  );` // SQL Statement for Create Table
-
-	log.Println("Create CUSTOMER table...")
-	statement, err := db.Prepare(createCustomerTableSQL) // Prepare SQL Statement
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	statement.Exec() // Execute SQL Statements
-	log.Println("CUSTOMER table created")
-}
 
 /*
 	createCustomerTableSQL := `CREATE TABLE IF NOT EXISTS CUSTOMER (
