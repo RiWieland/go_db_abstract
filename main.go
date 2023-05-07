@@ -5,7 +5,8 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"strings"
+
+	//"strings"
 
 	"io/ioutil"
 	"log"
@@ -256,21 +257,8 @@ func (db database) execute(sqlStatement string) {
 
 // Every different databse systems needs individual function for creating Statement
 // -> different sql languages
-func (db database) prepareSql(t table) {
-	var sqlStatement strings.Builder
-
-	sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.name + "( ")
-
-	for key, element := range t.columnsType {
-		sqlStatement.WriteString(t.columnName[key] + " " + element + ", ")
-	}
-	fmt.Println(sqlStatement.String())
-}
 
 // special tables need to inherit execute from the database
-type view struct {
-	columns []interface{}
-}
 
 // Create Statement for RawTables
 type dbOperation interface {
