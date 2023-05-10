@@ -116,7 +116,7 @@ func main() {
 	customer.columnName = []string{"id", "firstname", "lastName", "age", "address", "streetAddress", "city", "state"}
 	customer.columnsType = []string{"integer", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}
 
-	db.prepareSql(customer)
+	customer.create()
 	fileExtension := jsonRawStorage.fileFormat
 	if fileExtension == ".csv" {
 		//extract := readCsvFile(filePath)
