@@ -15,7 +15,7 @@ type database struct {
 	dbType         string
 }
 
-func initializeDb(db database) *sql.DB {
+func (db database) initializeDb() *sql.DB {
 	pathSQLiteFile := db.path + db.nameSQLiteFile
 	file, err := os.Create(pathSQLiteFile) // Create SQLite file
 	if err != nil {

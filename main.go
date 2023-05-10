@@ -106,7 +106,7 @@ func main() {
 	var db database
 	db.path = "db/"
 	db.nameSQLiteFile = "sqlite-database.db"
-	db.instance = initializeDb(db)
+	db.instance = db.initializeDb()
 	defer db.instance.Close() // Defer Closing the database
 
 	// table:
