@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
@@ -184,75 +183,12 @@ func (r rawStorage) reader(fileNames string) customer {
 	return customerReturn
 }
 
-func (db database) reader(tableName []string) []customer {
-
-	var records []customer
-	rows, err := db.instance.Query("SELECT * FROM userinfo")
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	for rows.Next() {
-
-		var id int
-		var firstName string
-		var lastName string
-		var age int
-		var address string
-		var streetAddress string
-		var city string
-		var state string
-		err = rows.Scan(&id, &firstName, &lastName, &age, &address, &streetAddress, &city, &state)
-		record := customer{id, firstName + lastName, age, customerAddress{streetAddress, city, state}}
-		records = append(records, record)
-	}
-	rows.Close() //good habit to close
-
-	return records
-
-}
-
 func (r rawStorage) writer(filename string, dataCustomer string) {
 
 	file, _ := json.MarshalIndent(dataCustomer, "", " ")
 	filePath := r.path + filename
 	_ = ioutil.WriteFile(filePath, file, 0644)
 
-}
-
-func initializeDb(db database) *sql.DB {
-	pathSQLiteFile := db.path + db.nameSQLiteFile
-	file, err := os.Create(pathSQLiteFile) // Create SQLite file
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	file.Close()
-	log.Println("sqlite-database.db initialized")
-	sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db") // Open the created SQLite File
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	return sqliteDatabase
-}
-
-type database struct {
-	nameSQLiteFile string
-	path           string
-	instance       *sql.DB
-	dbType         string
-}
-
-// does every database needs own execute?
-func (db database) execute(sqlStatement string) {
-
-	log.Println("pereparing db access...")
-	statement, err := db.instance.Prepare(sqlStatement) // Prepare SQL Statement
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	statement.Exec() // Execute SQL Statements
-	log.Println("Statement executed")
 }
 
 // Every different databse systems needs individual function for creating Statement
