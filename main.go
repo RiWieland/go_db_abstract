@@ -26,6 +26,11 @@ To-Do:
 - table-struct: how to best create table columns and types?
 
 */
+// Every different databse systems needs individual function for creating Statement
+// -> different sql languages
+
+// special tables need to inherit execute from the database
+
 /*
 how to structure classes for different db's
 - Database (abstract)
@@ -37,7 +42,6 @@ how to structure classes for different db's
 - - execute
 - - prepare
 - - read/ query
-
 
 Classes
 Tables: (tables abstract?):
@@ -53,9 +57,9 @@ methods:
 
 Datatypes
 - Postgres
-	- VARCHAR
-	- STRING
-	- ...
+  - VARCHAR
+  - STRING
+  - ...
 
 // Abstract Class:
 // Tables:
@@ -64,9 +68,6 @@ Datatypes
 // Sub Classes:
 // special tables;
 // implement interfaces for specific types
-
-
-
 */
 type handler interface {
 	//logger()
@@ -190,30 +191,3 @@ func (r rawStorage) writer(filename string, dataCustomer string) {
 	_ = ioutil.WriteFile(filePath, file, 0644)
 
 }
-
-// Every different databse systems needs individual function for creating Statement
-// -> different sql languages
-
-// special tables need to inherit execute from the database
-
-// Create Statement for RawTables
-type dbOperation interface {
-	// usage of interface: for raw the Datatype needs conversion, for tables it does not
-	createTable()
-	insertTable()
-}
-
-// pointer for db?
-
-/*
-	createCustomerTableSQL := `CREATE TABLE IF NOT EXISTS CUSTOMER (
-		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-		"firstName" TEXT,
-		"lastName" TEXT,
-		"age" TEXT
-		"address" TEXT
-		"streetAddress" TEXT,
-        "city" TEXT,
-        "state" "Louisiana" TEXT
-	  );` // SQL Statement for Create Table
-*/

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 )
 
 type database struct {
@@ -41,17 +40,6 @@ func (db database) execute(sqlStatement string) {
 	}
 	statement.Exec() // Execute SQL Statements
 	log.Println("Statement executed")
-}
-
-func (db database) prepareSql(t table) {
-	var sqlStatement strings.Builder
-
-	sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.name + "( ")
-
-	for key, element := range t.columnsType {
-		sqlStatement.WriteString(t.columnName[key] + " " + element + ", ")
-	}
-	fmt.Println(sqlStatement.String())
 }
 
 func (db database) reader(tableName []string) []customer {
