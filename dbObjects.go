@@ -14,6 +14,16 @@ type dbObject struct {
 	columnsType []string
 }
 
+type table struct {
+	dbObject
+	columnValue []string
+}
+
+type view struct {
+	dbObject
+	columnValue []string
+}
+
 // Abstract Interface
 type operation interface {
 	prepareSQL()
@@ -31,12 +41,4 @@ func (d *dbObject) create() {
 		sqlStatement.WriteString(d.columnName[key] + " " + element + ", ")
 	}
 	fmt.Println(sqlStatement.String())
-}
-
-type table struct {
-	dbObject
-}
-
-type view struct {
-	dbObject
 }

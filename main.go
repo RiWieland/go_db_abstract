@@ -114,8 +114,14 @@ func main() {
 	var customer table
 	customer.name = "Customer"
 
+	var orders table
+	orders.name = "orders"
+
 	customer.columnName = []string{"id", "firstname", "lastName", "age", "address", "streetAddress", "city", "state"}
 	customer.columnsType = []string{"integer", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}
+
+	orders.columnName = []string{"id", "firstname", "lastName", "object", "amount"}
+	orders.columnsType = []string{"integer", "TEXT", "TEXT", "TEXT", "TEXT"}
 
 	customer.create()
 	fileExtension := jsonRawStorage.fileFormat
