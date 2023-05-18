@@ -129,7 +129,7 @@ func main() {
 	rowCustomer.rowValues = []string{"1", "Jose", "A"}
 	rowOrder.rowValues = []string{"1", "Jose", "A", "book", "2"}
 
-	customer.create()
+	customerTable.create()
 	fileExtension := jsonRawStorage.fileFormat
 	if fileExtension == ".csv" {
 		//extract := readCsvFile(filePath)
