@@ -9,19 +9,32 @@ import (
 
 // Abstract Concrete Type
 type dbObject struct {
-	name        string
-	columnName  []string
-	columnsType []string
 }
 
 type table struct {
+	name string
 	dbObject
-	columnValue []string
+	column
+	row
 }
 
 type view struct {
 	dbObject
-	columnValue []string
+	column
+	row
+}
+
+// Column defines the datataypes
+type column struct {
+	name        string
+	columnsType []string
+	columnsName []string
+}
+
+// rows contain the values
+type row struct {
+	id        int
+	rowValues []string
 }
 
 // Abstract Interface
@@ -32,13 +45,13 @@ type operation interface {
 }
 
 // Create is used by concrete classes table, view, etc.
-func (d *dbObject) create() {
+func (d *table) create() {
 	var sqlStatement strings.Builder
 
 	sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + d.name + "( ")
 
 	for key, element := range d.columnsType {
-		sqlStatement.WriteString(d.columnName[key] + " " + element + ", ")
+		sqlStatement.WriteString(d.columnsName[key] + " " + element + ", ")
 	}
 	fmt.Println(sqlStatement.String())
 }

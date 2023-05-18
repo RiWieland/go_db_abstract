@@ -111,17 +111,23 @@ func main() {
 	defer db.instance.Close() // Defer Closing the database
 
 	// table:
-	var customer table
-	customer.name = "Customer"
+	var customerTable table
+	customerTable.name = "Customer"
 
-	var orders table
-	orders.name = "orders"
+	var ordersTable table
+	ordersTable.name = "orders"
 
-	customer.columnName = []string{"id", "firstname", "lastName", "age", "address", "streetAddress", "city", "state"}
-	customer.columnsType = []string{"integer", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}
+	var rowCustomer row
+	var rowOrder row
 
-	orders.columnName = []string{"id", "firstname", "lastName", "object", "amount"}
-	orders.columnsType = []string{"integer", "TEXT", "TEXT", "TEXT", "TEXT"}
+	customerTable.columnsName = []string{"id", "firstname", "lastName", "age", "address", "streetAddress", "city", "state"}
+	customerTable.columnsType = []string{"integer", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}
+
+	ordersTable.columnsName = []string{"id", "firstname", "lastName", "object", "amount"}
+	customerTable.columnsType = []string{"integer", "TEXT", "TEXT", "TEXT", "TEXT"}
+
+	rowCustomer.rowValues = []string{"1", "Jose", "A"}
+	rowOrder.rowValues = []string{"1", "Jose", "A", "book", "2"}
 
 	customer.create()
 	fileExtension := jsonRawStorage.fileFormat
