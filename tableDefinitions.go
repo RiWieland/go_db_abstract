@@ -1,7 +1,16 @@
 package main
 
-type customer struct {
+type customerCollection struct {
 	table
+	c []customer
+}
+
+type orderCollection struct {
+	table
+	o []order
+}
+
+type customer struct {
 	id        int
 	firstname string
 	lastname  string
@@ -9,8 +18,7 @@ type customer struct {
 	adress
 }
 
-type orders struct {
-	table
+type order struct {
 	id        int
 	firstname string
 	lastname  string
