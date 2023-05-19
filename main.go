@@ -81,19 +81,6 @@ type rawStorage struct {
 	totalSize  float64
 }
 
-type customerAddress struct {
-	street string
-	city   string
-	state  string
-}
-
-type customer struct {
-	id      int
-	name    string
-	age     int
-	address customerAddress
-}
-
 func main() {
 
 	var jsonRawStorage rawStorage
@@ -111,23 +98,41 @@ func main() {
 	defer db.instance.Close() // Defer Closing the database
 
 	// table:
-	var customerTable table
-	customerTable.name = "Customer"
+	var customerA customer
+	var customerB customer
 
-	var ordersTable table
-	ordersTable.name = "orders"
+	var ordersA order
+	var ordersB order
 
-	var rowCustomer row
-	var rowOrder row
+	customerA.id = 1
+	customerA.firstname = "Jose"
+	customerA.lastname = "Al"
+	customerA.age = 36
 
-	customerTable.columnsName = []string{"id", "firstname", "lastName", "age", "address", "streetAddress", "city", "state"}
-	customerTable.columnsType = []string{"integer", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}
+	customerB.id = 2
+	customerB.firstname = "Jose"
+	customerB.lastname = "Al"
+	customerB.age = 36
 
-	ordersTable.columnsName = []string{"id", "firstname", "lastName", "object", "amount"}
-	customerTable.columnsType = []string{"integer", "TEXT", "TEXT", "TEXT", "TEXT"}
+	ordersA.id = 1
+	ordersA.firstname = "Jose"
+	ordersA.lastname = "Al"
+	ordersA.amount = 5
+	ordersA.shipped = true
 
-	rowCustomer.rowValues = []string{"1", "Jose", "A"}
-	rowOrder.rowValues = []string{"1", "Jose", "A", "book", "2"}
+	ordersB.id = 2
+	ordersB.firstname = "Bold"
+	ordersB.lastname = "Eric"
+	ordersB.amount = 1
+	ordersB.shipped = true
+
+	var orderTable orderCollection
+	orderTable.name = "Orders"
+	orderTable.o = []order{ordersA, ordersB}
+
+	var customerTable customerCollection
+	customerTable.name = "Customner"
+	customerTable.c = []customer{customerA, customerB}
 
 	customerTable.create()
 	fileExtension := jsonRawStorage.fileFormat
