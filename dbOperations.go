@@ -67,5 +67,4 @@ func (db database) reader(tableName []string) []customer {
 	rows.Close() //good habit to close
 
 	return records
-
 }
