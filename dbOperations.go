@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 type database struct {
@@ -67,4 +68,20 @@ func (db database) reader(tableName []string) []customer {
 	rows.Close() //good habit to close
 
 	return records
+}
+
+func (db database) insert(obj dbObject) {
+	var sqlStatement strings.Builder
+	/*
+		INSERT INTO table (column1,column2 ,..)
+		VALUES( value1,	value2 ,...);
+	*/
+
+	sqlStatement.WriteString("INSERT INTO " + obj.name + "( ")
+
+	for key, element := range obj.columnsType {
+		sqlStatement.WriteString(obj.columnsName[key] + " " + element + ", ")
+	}
+	fmt.Println(sqlStatement.String())
+
 }

@@ -114,12 +114,27 @@ func main() {
 	ordersB.amount = 1
 	ordersB.shipped = true
 
-	var orderTable orderCollection
-	orderTable.name = "Orders"
-	orderTable.o = []order{ordersA, ordersB}
+	customerTableSuper := dbObject{
+		name: "Customers",
+	}
+	customerTableAbstract := table{
+		dbObject: customerTableSuper,
+	}
+	customerTable := &customerCollection{
+		table: customerTableAbstract,
+	}
 
-	var customerTable customerCollection
-	customerTable.name = "Customner"
+	orderTableSuper := dbObject{
+		name: "Orders",
+	}
+	orderTableAbstract := table{
+		dbObject: orderTableSuper,
+	}
+	orderTable := &orderCollection{
+		table: orderTableAbstract,
+	}
+
+	orderTable.o = []order{ordersA, ordersB}
 	customerTable.c = []customer{customerA, customerB}
 
 	customerTable.create()

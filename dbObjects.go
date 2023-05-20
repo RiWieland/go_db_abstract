@@ -6,18 +6,18 @@ import (
 )
 
 // abstract class for db objects:
-
-// Abstract Concrete Type
 type dbObject struct {
+	name string
 }
 
+// Implementing Type
 type table struct {
-	name string
 	dbObject
 	column
 	row
 }
 
+// Implementing Type
 type view struct {
 	dbObject
 	column
