@@ -70,17 +70,17 @@ func (db database) reader(tableName []string) []customer {
 	return records
 }
 
-func (db database) insert(obj dbObject) {
+func (db database) insert(t table) {
 	var sqlStatement strings.Builder
 	/*
 		INSERT INTO table (column1,column2 ,..)
 		VALUES( value1,	value2 ,...);
 	*/
 
-	sqlStatement.WriteString("INSERT INTO " + obj.name + "( ")
+	sqlStatement.WriteString("INSERT INTO " + t.name + "( ")
 
-	for key, element := range obj.columnsType {
-		sqlStatement.WriteString(obj.columnsName[key] + " " + element + ", ")
+	for key, element := range t.columnsType {
+		sqlStatement.WriteString(t.columnsName[key] + " " + element + ", ")
 	}
 	fmt.Println(sqlStatement.String())
 

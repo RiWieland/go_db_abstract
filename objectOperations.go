@@ -1,6 +1,6 @@
 package main
 
 // functions on dbOjects
-func (*dbObject) leftJoin(obj dbObject, col column) {
+func (t table) leftJoin(tableJoin table, col column) {
 
 }

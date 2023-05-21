@@ -6,22 +6,13 @@ import (
 )
 
 // abstract class for db objects:
-type dbObject struct {
-	name string
-}
 
 // Implementing Type
 type table struct {
-	dbObject
+	name string
 	column
 	row
-}
-
-// Implementing Type
-type view struct {
-	dbObject
-	column
-	row
+	view bool
 }
 
 // Column defines the datataypes

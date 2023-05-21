@@ -114,23 +114,17 @@ func main() {
 	ordersB.amount = 1
 	ordersB.shipped = true
 
-	customerTableSuper := dbObject{
-		name: "Customers",
-	}
 	customerTableAbstract := table{
-		dbObject: customerTableSuper,
+		name: "Customer",
 	}
-	customerTable := &customerCollection{
+	customerTable := customerCollection{
 		table: customerTableAbstract,
 	}
 
-	orderTableSuper := dbObject{
-		name: "Orders",
-	}
 	orderTableAbstract := table{
-		dbObject: orderTableSuper,
+		name: "Order",
 	}
-	orderTable := &orderCollection{
+	orderTable := orderCollection{
 		table: orderTableAbstract,
 	}
 
