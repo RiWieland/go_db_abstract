@@ -2,10 +2,8 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
-	"strings"
 )
 
 type database struct {
@@ -41,47 +39,4 @@ func (db database) execute(sqlStatement string) {
 	}
 	statement.Exec() // Execute SQL Statements
 	log.Println("Statement executed")
-}
-
-func (db database) reader(tableName []string) []customer {
-
-	var records []customer
-	rows, err := db.instance.Query("SELECT * FROM userinfo")
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	for rows.Next() {
-
-		var id int
-		var firstName string
-		var lastName string
-		var age int
-		var address string
-		var streetAddress string
-		var city string
-		var state string
-		err = rows.Scan(&id, &firstName, &lastName, &age, &address, &streetAddress, &city, &state)
-		record := customer{id, firstName + lastName, age, customerAddress{streetAddress, city, state}}
-		records = append(records, record)
-	}
-	rows.Close() //good habit to close
-
-	return records
-}
-
-func (db database) insert(t table) {
-	var sqlStatement strings.Builder
-	/*
-		INSERT INTO table (column1,column2 ,..)
-		VALUES( value1,	value2 ,...);
-	*/
-
-	sqlStatement.WriteString("INSERT INTO " + t.name + "( ")
-
-	for key, element := range t.columnsType {
-		sqlStatement.WriteString(t.columnsName[key] + " " + element + ", ")
-	}
-	fmt.Println(sqlStatement.String())
-
 }

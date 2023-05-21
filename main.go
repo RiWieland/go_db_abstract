@@ -69,6 +69,8 @@ type handler interface {
 	reader()
 }
 
+var db database
+
 func main() {
 
 	var jsonRawStorage rawStorage
@@ -79,7 +81,6 @@ func main() {
 	csvRawStorage.path = "data_csv/customer_20230415.csv"
 	csvRawStorage.fileFormat = path.Ext(csvRawStorage.path)
 
-	var db database
 	db.path = "db/"
 	db.nameSQLiteFile = "sqlite-database.db"
 	db.instance = db.initializeDb()
@@ -131,7 +132,8 @@ func main() {
 	orderTable.o = []order{ordersA, ordersB}
 	customerTable.c = []customer{customerA, customerB}
 
-	customerTable.create()
+	customerTable.createTable()
+
 	fileExtension := jsonRawStorage.fileFormat
 	if fileExtension == ".csv" {
 		//extract := readCsvFile(filePath)
