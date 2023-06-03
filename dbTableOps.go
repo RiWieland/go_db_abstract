@@ -28,12 +28,14 @@ type row struct {
 
 // Abstract Interface
 type operation interface {
-	prepareSQL()
-	create()
-	// maybe more granular operations: insert, create
+	filterTable()
+	createTable()
+	// Is Interface neccessary?
 }
 
 // Create returns SQL Statement
+// implement sql-types via mapping table
+// how to connect the datatypes of go objects?
 func (t table) createTable() {
 
 	var sqlStatement strings.Builder
@@ -55,9 +57,10 @@ func (t table) createTable() {
 
 }
 
-// table or db implement method?
-// -> affects returntype
-func (t table) query() []customer {
+/*
+// function must query table and convert it to the go object with mapped types
+// how to integrate the object
+func (t table) query() table {
 
 	var records []customer
 	rows, err := db.instance.Query("SELECT * FROM " + t.name)
@@ -83,9 +86,9 @@ func (t table) query() []customer {
 
 	return records
 }
+*/
 
-// table or db implement method?
-func (db *database) insert(t table) {
+func (t table) insert() {
 	var sqlStatement strings.Builder
 
 	sqlStatement.WriteString("INSERT INTO " + t.name + "( ")
@@ -93,5 +96,17 @@ func (db *database) insert(t table) {
 	for key, element := range t.columnsType {
 		sqlStatement.WriteString(t.columnsName[key] + " " + element + ", ")
 	}
-	fmt.Println(sqlStatement.String())
+	_, err := db.instance.Exec(sqlStatement.String())
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func (t table) filter() {
+
+}
+
+// function joins other table on specified column
+func (t table) leftJoin(tableJoin table, col column) {
+
 }

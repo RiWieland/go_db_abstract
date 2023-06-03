@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 
 	//"strings"
 
@@ -134,13 +134,4 @@ func main() {
 
 	customerTable.createTable()
 
-	fileExtension := jsonRawStorage.fileFormat
-	if fileExtension == ".csv" {
-		//extract := readCsvFile(filePath)
-		extract_json := csvRawStorage.reader("test")
-		fmt.Println(extract_json)
-	} else if fileExtension == ".json" {
-		extract_json := jsonRawStorage.reader("/customer_20230412.json")
-		fmt.Println(extract_json)
-	}
 }

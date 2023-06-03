@@ -1,13 +1,13 @@
 package main
 
 import (
-	"encoding/csv"
+	//"encoding/csv"
 	"encoding/json"
-	"fmt"
+	//"fmt"
 	"io/ioutil"
-	"log"
-	"os"
-	"strconv"
+	//"log"
+	//"os"
+	//"strconv"
 )
 
 type rawStorage struct {
@@ -16,6 +16,7 @@ type rawStorage struct {
 	totalSize  float64
 }
 
+/*
 func readCsvFile(filePath string) []customer {
 	recordsCustomer := []customer{}
 	f, err := os.Open(filePath)
@@ -42,6 +43,7 @@ func readCsvFile(filePath string) []customer {
 	}
 	return recordsCustomer
 }
+*/
 
 func (r rawStorage) writer(filename string, dataCustomer string) {
 
@@ -51,6 +53,7 @@ func (r rawStorage) writer(filename string, dataCustomer string) {
 
 }
 
+/*
 func (r rawStorage) reader(fileNames string) customer {
 	filePath := r.path + fileNames
 	fmt.Println(fileNames)
@@ -78,3 +81,4 @@ func (r rawStorage) reader(fileNames string) customer {
 
 	return customerReturn
 }
+*/

@@ -1,0 +1,12 @@
+{
+    "firstName": "Alex",
+    "lastName": "Smith",
+    "age": 36,
+    "address":
+    {
+        "streetAddress": "Canal Street 3",
+        "city": "New Orleans",
+        "state": "Louisiana"
+    }
+}
+
