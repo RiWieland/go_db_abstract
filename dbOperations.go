@@ -21,7 +21,7 @@ func (db database) initializeDb() *sql.DB {
 	}
 	file.Close()
 	log.Println("sqlite-database.db initialized")
-	sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db") // Open the created SQLite File
+	sqliteDatabase, _ := sql.Open("sqlite3", pathSQLiteFile) // Open the created SQLite File
 	if err != nil {
 		log.Fatal(err.Error())
 	}
