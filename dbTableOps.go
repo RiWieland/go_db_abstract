@@ -8,9 +8,9 @@ import (
 // Implementing Type
 type table struct {
 	name string
+	view bool
 	column
 	row
-	view bool
 }
 
 // Column defines the datataypes
@@ -40,7 +40,7 @@ func (t table) createTable() {
 
 	var sqlStatement strings.Builder
 
-	if t.view == true {
+	if t.view != true {
 		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.name + "( ")
 	} else {
 		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.name + "( ")
@@ -48,8 +48,9 @@ func (t table) createTable() {
 
 	for key, element := range t.columnsType {
 		sqlStatement.WriteString(t.columnsName[key] + " " + element + ", ")
+		fmt.Println(t.columnsName[key] + " " + element + ", ")
 	}
-
+	fmt.Println(sqlStatement.String())
 	_, err := db.instance.Exec(sqlStatement.String())
 	if err != nil {
 		fmt.Println(err)

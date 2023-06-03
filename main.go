@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 
 	//"strings"
 
@@ -72,7 +72,7 @@ type handler interface {
 var db database
 
 func main() {
-
+	fmt.Println("test")
 	var jsonRawStorage rawStorage
 	var csvRawStorage rawStorage
 	jsonRawStorage.path = "data_json/"
@@ -81,7 +81,7 @@ func main() {
 	csvRawStorage.path = "data_csv/customer_20230415.csv"
 	csvRawStorage.fileFormat = path.Ext(csvRawStorage.path)
 
-	db.path = "db/"
+	db.path = "./db/"
 	db.nameSQLiteFile = "sqlite-database.db"
 	db.instance = db.initializeDb()
 	defer db.instance.Close() // Defer Closing the database
@@ -117,6 +117,7 @@ func main() {
 
 	customerTableAbstract := table{
 		name: "Customer",
+		view: false,
 	}
 	customerTable := customerCollection{
 		table: customerTableAbstract,
@@ -124,13 +125,14 @@ func main() {
 
 	orderTableAbstract := table{
 		name: "Order",
+		view: false,
 	}
 	orderTable := orderCollection{
 		table: orderTableAbstract,
 	}
-
 	orderTable.o = []order{ordersA, ordersB}
 	customerTable.c = []customer{customerA, customerB}
+	fmt.Println(customerTable)
 
 	customerTable.createTable()
 
