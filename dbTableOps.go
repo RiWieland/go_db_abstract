@@ -2,26 +2,27 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
 // Implementing Type
 type table struct {
-	name string
-	view bool
-	column
-	row
+	Name string
+	View bool
+	Column
+	Row
 }
 
 // Column defines the datataypes
-type column struct {
+type Column struct {
 	name        string
 	columnsType []string
 	columnsName []string
 }
 
 // rows contain the values
-type row struct {
+type Row struct {
 	id        int
 	rowValues []string
 }
@@ -36,20 +37,31 @@ type operation interface {
 // Create returns SQL Statement
 // implement sql-types via mapping table
 // how to connect the datatypes of go objects?
+// how to reflect on concrete type /not abstract? -> implement a method on table to
+// export for concrete class?
 func (t table) createTable() {
 
 	var sqlStatement strings.Builder
 
-	if t.view != true {
-		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.name + "( ")
+	if t.View != true {
+		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.Name + "( ")
 	} else {
-		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.name + "( ")
+		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.Name + "( ")
 	}
 
-	for key, element := range t.columnsType {
-		sqlStatement.WriteString(t.columnsName[key] + " " + element + ", ")
-		fmt.Println(t.columnsName[key] + " " + element + ", ")
+	s := reflect.ValueOf(&t).Elem()
+	typeOfT := s.Type()
+	for i := 0; i < s.NumField(); i++ {
+		f := s.Field(i)
+		fmt.Printf("%d: %s %s = %v\n", i,
+			typeOfT.Field(i).Name, f.Type(), f.Interface())
 	}
+	/*
+		for key, element := range t.ColumnsType {
+			sqlStatement.WriteString(t.ColumnsName[key] + " " + element + ", ")
+			fmt.Println(t.columnsName[key] + " " + element + ", ")
+		}
+	*/
 	fmt.Println(sqlStatement.String())
 	_, err := db.instance.Exec(sqlStatement.String())
 	if err != nil {
@@ -108,6 +120,6 @@ func (t table) filter() {
 }
 
 // function joins other table on specified column
-func (t table) leftJoin(tableJoin table, col column) {
+func (t table) leftJoin(tableJoin table, col Column) {
 
 }

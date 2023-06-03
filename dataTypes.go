@@ -4,16 +4,16 @@ package main
 
 // Concrete types:
 type typeInt struct {
-	column
+	Column
 	value int
 }
 
 type typeString struct {
-	column
+	Column
 	value string
 }
 
 type typeVarchar struct {
-	column
+	Column
 	value string
 }

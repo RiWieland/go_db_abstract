@@ -19,12 +19,12 @@ type customer struct {
 }
 
 type order struct {
-	id        int
-	firstname string
-	lastname  string
-	object    string
-	amount    int
-	shipped   bool
+	Id        int
+	Firstname string
+	Lastname  string
+	Object    string
+	Amount    int
+	Shipped   bool
 }
 
 type adress struct {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	//"strings"
-
 	"path"
+	"reflect"
 
 	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 )
@@ -103,29 +103,39 @@ func main() {
 	customerB.lastname = "Cuck"
 	customerB.age = 36
 
-	ordersA.id = 1
-	ordersA.firstname = "Jose"
-	ordersA.lastname = "Al"
-	ordersA.amount = 5
-	ordersA.shipped = true
+	ordersA.Id = 1
+	ordersA.Firstname = "Jose"
+	ordersA.Lastname = "Al"
+	ordersA.Amount = 5
+	ordersA.Shipped = true
 
-	ordersB.id = 2
-	ordersB.firstname = "Bold"
-	ordersB.lastname = "Eric"
-	ordersB.amount = 1
-	ordersB.shipped = true
+	ordersB.Id = 2
+	ordersB.Firstname = "Bold"
+	ordersB.Lastname = "Eric"
+	ordersB.Amount = 1
+	ordersB.Shipped = true
+
+	/*
+		od := order{1, "name", "nn", "34", 3, true}
+		s := reflect.ValueOf(&od).Elem()
+		typeOfT := s.Type()
+		for i := 0; i < s.NumField(); i++ {
+			f := s.Field(i)
+			fmt.Printf("%d: %s %s = %v\n", i,
+				typeOfT.Field(i).Name, f.Type(), f.Interface())
+		}*/
 
 	customerTableAbstract := table{
-		name: "Customer",
-		view: false,
+		Name: "Customer",
+		View: false,
 	}
 	customerTable := customerCollection{
 		table: customerTableAbstract,
 	}
 
 	orderTableAbstract := table{
-		name: "Order",
-		view: false,
+		Name: "Order",
+		View: false,
 	}
 	orderTable := orderCollection{
 		table: orderTableAbstract,
@@ -133,7 +143,7 @@ func main() {
 	orderTable.o = []order{ordersA, ordersB}
 	customerTable.c = []customer{customerA, customerB}
 	fmt.Println(customerTable)
-
+	fmt.Println(reflect.TypeOf(customerA.age))
 	customerTable.createTable()
 
 }
