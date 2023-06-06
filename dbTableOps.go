@@ -50,19 +50,21 @@ func (db database) createTable(t customerCollection) {
 		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.Name + "( ")
 	}
 
-	s := reflect.ValueOf(&t).Elem()
-	typeOfT := s.Type()
-	for i := 0; i < s.NumField(); i++ {
-		f := s.Field(i)
-		fmt.Printf("%d: %s %s = %v\n", i,
-			typeOfT.Field(i).Name, f.Type(), f.Interface())
+	// 1. extract collection customers
+	// 2. infer type of fields in customers
+
+	coll := t.C
+	f := coll[0]
+	//ty := reflect.TypeOf(f)
+	e := reflect.ValueOf(&f).Elem()
+
+	for i := 0; i < e.NumField(); i++ {
+		varName := e.Type().Field(i).Name
+		varType := e.Type().Field(i).Type
+		varValue := e.Field(i).Interface()
+		fmt.Printf("%v %v %v\n", varName, varType, varValue)
 	}
-	/*
-		for key, element := range t.ColumnsType {
-			sqlStatement.WriteString(t.ColumnsName[key] + " " + element + ", ")
-			fmt.Println(t.columnsName[key] + " " + element + ", ")
-		}
-	*/
+
 	fmt.Println(sqlStatement.String())
 	_, err := db.instance.Exec(sqlStatement.String())
 	if err != nil {
