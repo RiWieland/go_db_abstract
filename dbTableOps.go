@@ -7,7 +7,7 @@ import (
 )
 
 // Implementing Type
-type table struct {
+type Table struct {
 	Name string
 	View bool
 	Column
@@ -39,11 +39,12 @@ type operation interface {
 // how to connect the datatypes of go objects?
 // how to reflect on concrete type /not abstract? -> implement a method on table to
 // export for concrete class?
-func (t table) createTable() {
+func (db database) createTable(t customerCollection) {
 
 	var sqlStatement strings.Builder
+	//t := i.(customerCollection)
 
-	if t.View != true {
+	if t.Table.View != true {
 		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.Name + "( ")
 	} else {
 		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.Name + "( ")
@@ -67,6 +68,19 @@ func (t table) createTable() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+}
+
+func (t Table) reflectStruct() reflect.Value {
+	var f reflect.Value
+	s := reflect.ValueOf(&t).Elem()
+	typeOfT := s.Type()
+	for i := 0; i < s.NumField(); i++ {
+		f := s.Field(i)
+		fmt.Printf("%d: %s %s = %v\n", i,
+			typeOfT.Field(i).Name, f.Type(), f.Interface())
+	}
+	return f
 
 }
 
@@ -101,7 +115,7 @@ func (t table) query() table {
 }
 */
 
-func (t table) insert() {
+func (t Table) insert() {
 	var sqlStatement strings.Builder
 
 	sqlStatement.WriteString("INSERT INTO " + t.name + "( ")
@@ -115,11 +129,11 @@ func (t table) insert() {
 	}
 }
 
-func (t table) filter() {
+func (t Table) filter() {
 
 }
 
 // function joins other table on specified column
-func (t table) leftJoin(tableJoin table, col Column) {
+func (t Table) leftJoin(tableJoin Table, col Column) {
 
 }

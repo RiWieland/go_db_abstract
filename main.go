@@ -5,7 +5,7 @@ import (
 
 	//"strings"
 	"path"
-	"reflect"
+	//"reflect"
 
 	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 )
@@ -93,15 +93,15 @@ func main() {
 	var ordersA order
 	var ordersB order
 
-	customerA.id = 1
-	customerA.firstname = "Jose"
-	customerA.lastname = "Al"
-	customerA.age = 36
+	customerA.Id = 1
+	customerA.Firstname = "Jose"
+	customerA.Lastname = "Al"
+	customerA.Age = 36
 
-	customerB.id = 2
-	customerB.firstname = "Allen"
-	customerB.lastname = "Cuck"
-	customerB.age = 36
+	customerB.Id = 2
+	customerB.Firstname = "Allen"
+	customerB.Lastname = "Cuck"
+	customerB.Age = 36
 
 	ordersA.Id = 1
 	ordersA.Firstname = "Jose"
@@ -125,25 +125,24 @@ func main() {
 				typeOfT.Field(i).Name, f.Type(), f.Interface())
 		}*/
 
-	customerTableAbstract := table{
+	customerTableAbstract := Table{
 		Name: "Customer",
 		View: false,
 	}
 	customerTable := customerCollection{
-		table: customerTableAbstract,
+		Table: customerTableAbstract,
 	}
 
-	orderTableAbstract := table{
+	orderTableAbstract := Table{
 		Name: "Order",
 		View: false,
 	}
 	orderTable := orderCollection{
-		table: orderTableAbstract,
+		Table: orderTableAbstract,
 	}
 	orderTable.o = []order{ordersA, ordersB}
-	customerTable.c = []customer{customerA, customerB}
-	fmt.Println(customerTable)
-	fmt.Println(reflect.TypeOf(customerA.age))
-	customerTable.createTable()
-
+	customerTable.C = []customer{customerA, customerB}
+	//fmt.Println(customerTable)
+	//fmt.Println(reflect.TypeOf(customerA.age))
+	db.createTable(customerTable)
 }

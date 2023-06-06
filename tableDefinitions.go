@@ -1,21 +1,21 @@
 package main
 
 type customerCollection struct {
-	table
-	c []customer
+	Table
+	C []customer
 }
 
 type orderCollection struct {
-	table
+	Table
 	o []order
 }
 
 type customer struct {
-	id        int
-	firstname string
-	lastname  string
-	age       int
-	adress
+	Id        int
+	Firstname string
+	Lastname  string
+	Age       int
+	Adress
 }
 
 type order struct {
@@ -27,7 +27,7 @@ type order struct {
 	Shipped   bool
 }
 
-type adress struct {
+type Adress struct {
 	streetAddress string
 	city          string
 	state         string
