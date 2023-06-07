@@ -34,11 +34,6 @@ type operation interface {
 	// Is Interface neccessary?
 }
 
-// Create returns SQL Statement
-// implement sql-types via mapping table
-// how to connect the datatypes of go objects?
-// how to reflect on concrete type /not abstract? -> implement a method on table to
-// export for concrete class?
 func (db database) createTable(t customerCollection) {
 
 	var sqlStatement strings.Builder
@@ -50,19 +45,27 @@ func (db database) createTable(t customerCollection) {
 		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.Name + "( ")
 	}
 
-	// 1. extract collection customers
-	// 2. infer type of fields in customers
-
 	coll := t.C
 	f := coll[0]
-	//ty := reflect.TypeOf(f)
 	e := reflect.ValueOf(&f).Elem()
 
 	for i := 0; i < e.NumField(); i++ {
 		varName := e.Type().Field(i).Name
-		varType := e.Type().Field(i).Type
 		varValue := e.Field(i).Interface()
-		fmt.Printf("%v %v %v\n", varName, varType, varValue)
+		//varType := e.Type().Field(i).Type
+
+		// type switch with interface:
+		switch varValue.(type) {
+		case int:
+			i := fmt.Sprint(varName)
+			//sqlStatement.WriteString(i + " INTEGER, ")
+			sqlStatement.WriteString("\"" + i + "\"  INTEGER, ")
+
+		case string:
+			i := fmt.Sprint(varName)
+			sqlStatement.WriteString("\"" + i + "\"  TEXT, ")
+
+		}
 	}
 
 	fmt.Println(sqlStatement.String())
