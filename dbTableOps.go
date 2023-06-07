@@ -34,10 +34,10 @@ type operation interface {
 	// Is Interface neccessary?
 }
 
+// only int and string
 func (db database) createTable(t customerCollection) {
 
 	var sqlStatement strings.Builder
-	//t := i.(customerCollection)
 
 	if t.Table.View != true {
 		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.Name + "( ")
@@ -54,71 +54,24 @@ func (db database) createTable(t customerCollection) {
 		varValue := e.Field(i).Interface()
 		//varType := e.Type().Field(i).Type
 
-		// type switch with interface:
 		switch varValue.(type) {
 		case int:
 			i := fmt.Sprint(varName)
-			//sqlStatement.WriteString(i + " INTEGER, ")
 			sqlStatement.WriteString("\"" + i + "\"  INTEGER, ")
 
 		case string:
 			i := fmt.Sprint(varName)
 			sqlStatement.WriteString("\"" + i + "\"  TEXT, ")
-
 		}
 	}
 
-	fmt.Println(sqlStatement.String())
 	_, err := db.instance.Exec(sqlStatement.String())
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println("Executed statement: " + sqlStatement.String())
 
 }
-
-func (t Table) reflectStruct() reflect.Value {
-	var f reflect.Value
-	s := reflect.ValueOf(&t).Elem()
-	typeOfT := s.Type()
-	for i := 0; i < s.NumField(); i++ {
-		f := s.Field(i)
-		fmt.Printf("%d: %s %s = %v\n", i,
-			typeOfT.Field(i).Name, f.Type(), f.Interface())
-	}
-	return f
-
-}
-
-/*
-// function must query table and convert it to the go object with mapped types
-// how to integrate the object
-func (t table) query() table {
-
-	var records []customer
-	rows, err := db.instance.Query("SELECT * FROM " + t.name)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	for rows.Next() {
-
-		var id int
-		var firstName string
-		var lastName string
-		var age int
-		var address string
-		var streetAddress string
-		var city string
-		var state string
-		err = rows.Scan(&id, &firstName, &lastName, &age, &address, &streetAddress, &city, &state)
-		record := customer{id, firstName + lastName, age, customerAddress{streetAddress, city, state}}
-		records = append(records, record)
-	}
-	rows.Close() //good habit to close
-
-	return records
-}
-*/
 
 func (t Table) insert() {
 	var sqlStatement strings.Builder
