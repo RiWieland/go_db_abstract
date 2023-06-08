@@ -34,12 +34,37 @@ type operation interface {
 	// Is Interface neccessary?
 }
 
+/*
+// -> create slice of same type: (is this necessary?)
+sliceType := reflect.SliceOf(reflect.TypeOf(k))
+slice := reflect.MakeSlice(sliceType, 10, 10)
+// -> fill slice with custom elemens:
+*/
+func (db database) testCreate(t interface{}) {
+
+	f := reflect.ValueOf(t)
+	l := reflect.Indirect(f).FieldByIndex([]int{1})
+
+	if l.Kind() == reflect.Slice {
+		for j := 0; j < l.Len(); j++ {
+			o := l.Index(j) //.Interface() // without interface -> struct
+			u := o.Interface()
+
+			val := reflect.ValueOf(u)
+			for i := 0; i < val.NumField(); i++ {
+				fmt.Printf("%v=%v\n", val.Type().Field(i).Name, val.Field(i).Interface())
+
+			}
+		}
+	}
+}
+
 // only int and string
 func (db database) createTable(t customerCollection) {
 
 	var sqlStatement strings.Builder
 
-	if t.Table.View != true {
+	if t.View != true {
 		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.Name + "( ")
 	} else {
 		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.Name + "( ")
@@ -70,7 +95,6 @@ func (db database) createTable(t customerCollection) {
 		fmt.Println(err)
 	}
 	fmt.Println("Executed statement: " + sqlStatement.String())
-
 }
 
 func (t Table) insert() {

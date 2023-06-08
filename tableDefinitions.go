@@ -7,7 +7,7 @@ type customerCollection struct {
 
 type orderCollection struct {
 	Table
-	o []order
+	C []order
 }
 
 type customer struct {

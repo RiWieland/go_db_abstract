@@ -106,12 +106,14 @@ func main() {
 	ordersA.Id = 1
 	ordersA.Firstname = "Jose"
 	ordersA.Lastname = "Al"
+	ordersA.Object = "Book"
 	ordersA.Amount = 5
 	ordersA.Shipped = true
 
 	ordersB.Id = 2
 	ordersB.Firstname = "Bold"
 	ordersB.Lastname = "Eric"
+	ordersB.Object = "Movie"
 	ordersB.Amount = 1
 	ordersB.Shipped = true
 
@@ -125,6 +127,7 @@ func main() {
 				typeOfT.Field(i).Name, f.Type(), f.Interface())
 		}*/
 
+	// use promoted field for init
 	customerTableAbstract := Table{
 		Name: "Customer",
 		View: false,
@@ -140,9 +143,11 @@ func main() {
 	orderTable := orderCollection{
 		Table: orderTableAbstract,
 	}
-	orderTable.o = []order{ordersA, ordersB}
+	orderTable.C = []order{ordersA, ordersB}
 	customerTable.C = []customer{customerA, customerB}
 	//fmt.Println(customerTable)
 	//fmt.Println(reflect.TypeOf(customerA.age))
 	db.createTable(customerTable)
+	db.testCreate(orderTable)
+	//ReadStruct(orderTable)
 }
