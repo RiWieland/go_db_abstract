@@ -145,11 +145,9 @@ func main() {
 	}
 	orderTable.C = []order{ordersA, ordersB}
 	customerTable.C = []customer{customerA, customerB}
-	//fmt.Println(customerTable)
-	//fmt.Println(reflect.TypeOf(customerA.age))
-	//test := ExportEmbbStruct(orderTable)
-	//fmt.Println(test)
-	//db.createTable(customerTable)
-	//db.testCreate(orderTable)
-	ReadEmbbStruct(orderTable)
+
+	for _, orders := range orderTable.C {
+		ReadEmbbStruct(orders)
+	}
+
 }

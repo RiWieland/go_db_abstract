@@ -39,6 +39,7 @@ func ReadEmbbStruct(st interface{}) {
 }
 
 func readEmbbStruct(val reflect.Value) {
+
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()
 	}
@@ -53,7 +54,9 @@ func readEmbbStruct(val reflect.Value) {
 				readEmbbStruct(f.Index(i))
 			}
 		case reflect.String, reflect.Int:
+			//values = append(values, val.Field[i])
 			fmt.Printf("%v=%v\n", val.Type().Field(i).Name, val.Field(i))
+
 		}
 	}
 }
@@ -84,35 +87,26 @@ func (db database) testCreate(t interface{}) {
 }
 
 // only int and string
-func (db database) createTable(t customerCollection) {
+func (db database) createTable(t orderCollection) {
 
 	var sqlStatement strings.Builder
 
-	if t.View != true {
+	if t.Table.View != true {
 		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.Name + "( ")
 	} else {
 		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.Name + "( ")
 	}
 
-	coll := t.C
-	f := coll[0]
-	e := reflect.ValueOf(&f).Elem()
+	/*
+		switch i.(type) {
+			case int:
+				i := fmt.Sprint(i)
+				sqlStatement.WriteString("\"" + i + "\"  INTEGER, ")
 
-	for i := 0; i < e.NumField(); i++ {
-		varName := e.Type().Field(i).Name
-		varValue := e.Field(i).Interface()
-		//varType := e.Type().Field(i).Type
-
-		switch varValue.(type) {
-		case int:
-			i := fmt.Sprint(varName)
-			sqlStatement.WriteString("\"" + i + "\"  INTEGER, ")
-
-		case string:
-			i := fmt.Sprint(varName)
-			sqlStatement.WriteString("\"" + i + "\"  TEXT, ")
-		}
-	}
+			case string:
+				i := fmt.Sprint(i)
+				sqlStatement.WriteString("\"" + i + "\"  TEXT, ")
+			}*/
 
 	_, err := db.instance.Exec(sqlStatement.String())
 	if err != nil {
