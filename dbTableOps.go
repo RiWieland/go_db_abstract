@@ -54,11 +54,34 @@ func readEmbbStruct(val reflect.Value) {
 				readEmbbStruct(f.Index(i))
 			}
 		case reflect.String, reflect.Int:
-			//values = append(values, val.Field[i])
 			fmt.Printf("%v=%v\n", val.Type().Field(i).Name, val.Field(i))
 
 		}
 	}
+}
+
+func ReadStruct(st interface{}) []reflect.Value {
+
+	var retValues []reflect.Value
+
+	val := reflect.ValueOf(st)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+	for i := 0; i < val.NumField(); i++ {
+		f := val.Field(i)
+		switch f.Kind() {
+		case reflect.Struct:
+			ReadStruct(f.Interface())
+		case reflect.Slice:
+			for j := 0; j < f.Len(); j++ {
+				ReadStruct(f.Index(i).Interface())
+			}
+		default:
+			retValues = append(retValues, val)
+		}
+	}
+	return retValues
 }
 
 /*
@@ -67,47 +90,40 @@ sliceType := reflect.SliceOf(reflect.TypeOf(k))
 slice := reflect.MakeSlice(sliceType, 10, 10)
 // -> fill slice with custom elemens:
 */
-func (db database) testCreate(t interface{}) {
-
-	f := reflect.ValueOf(t)
-	l := reflect.Indirect(f).FieldByIndex([]int{1})
-
-	if l.Kind() == reflect.Slice {
-		for j := 0; j < l.Len(); j++ {
-			o := l.Index(j) //.Interface() // without interface -> struct
-			u := o.Interface()
-
-			val := reflect.ValueOf(u)
-			for i := 0; i < val.NumField(); i++ {
-				fmt.Printf("%v=%v\n", val.Type().Field(i).Name, val.Field(i).Interface())
-
-			}
-		}
-	}
-}
 
 // only int and string
+// on orderCollection -> make it for all tables
 func (db database) createTable(t orderCollection) {
 
 	var sqlStatement strings.Builder
 
-	if t.Table.View != true {
-		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.Name + "( ")
+	if t.View != true {
+		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.Name + "(")
 	} else {
-		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.Name + "( ")
+		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.Name + "(")
 	}
 
-	/*
-		switch i.(type) {
-			case int:
-				i := fmt.Sprint(i)
-				sqlStatement.WriteString("\"" + i + "\"  INTEGER, ")
+	for _, order := range t.C {
+		//ReadEmbbStruct(orders)
+		res := ReadStruct(order)
 
-			case string:
-				i := fmt.Sprint(i)
-				sqlStatement.WriteString("\"" + i + "\"  TEXT, ")
-			}*/
+		for i, j := range res {
 
+			val := j.Field(i)
+			switch val.Kind() {
+			case reflect.String:
+				fmt.Println("string called")
+				s := fmt.Sprint(j.Type().Field(i).Name)
+				sqlStatement.WriteString("\"" + s + "\"  TEXT, ")
+
+			case reflect.Int:
+				s := fmt.Sprint(j.Type().Field(i).Name)
+				sqlStatement.WriteString("\"" + s + "\"  INTEGER, ")
+			}
+
+		}
+	}
+	sqlStatement.WriteString(")")
 	_, err := db.instance.Exec(sqlStatement.String())
 	if err != nil {
 		fmt.Println(err)
