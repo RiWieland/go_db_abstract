@@ -145,9 +145,11 @@ func main() {
 	}
 	orderTable.C = []order{ordersA, ordersB}
 	customerTable.C = []customer{customerA, customerB}
-
-	for _, orders := range orderTable.C {
-		ReadEmbbStruct(orders)
-	}
+	db.createTable(orderTable)
+	/*
+		for _, orders := range orderTable.C {
+			//ReadEmbbStruct(orders)
+			ReadStruct(orders)
+		}*/
 
 }

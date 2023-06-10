@@ -98,9 +98,9 @@ func (db database) createTable(t orderCollection) {
 	var sqlStatement strings.Builder
 
 	if t.View != true {
-		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.Name + "(")
+		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.Name + " (")
 	} else {
-		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.Name + "(")
+		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.Name + " (")
 	}
 
 	for _, order := range t.C {
@@ -108,27 +108,29 @@ func (db database) createTable(t orderCollection) {
 		res := ReadStruct(order)
 
 		for i, j := range res {
-
 			val := j.Field(i)
 			switch val.Kind() {
 			case reflect.String:
-				fmt.Println("string called")
+
 				s := fmt.Sprint(j.Type().Field(i).Name)
-				sqlStatement.WriteString("\"" + s + "\"  TEXT, ")
+				sqlStatement.WriteString(" \"" + s + "\" TEXT,")
 
 			case reflect.Int:
 				s := fmt.Sprint(j.Type().Field(i).Name)
-				sqlStatement.WriteString("\"" + s + "\"  INTEGER, ")
+				sqlStatement.WriteString(" \"" + s + "\" INTEGER,")
 			}
 
 		}
 	}
-	sqlStatement.WriteString(")")
-	_, err := db.instance.Exec(sqlStatement.String())
+	sz := len(sqlStatement.String())
+	ExSql := sqlStatement.String()
+	ExSql = ExSql[:sz-1] + ")"
+
+	_, err := db.instance.Exec(ExSql)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Executed statement: " + sqlStatement.String())
+	fmt.Println("Executed statement: " + ExSql)
 }
 
 func (t Table) insert() {
