@@ -35,10 +35,13 @@ type operation interface {
 }
 
 func ReadEmbbStruct(st interface{}) {
-	ReadEmbbStruct(reflect.ValueOf(st))
+	readEmbbStruct(reflect.ValueOf(st))
 }
 
 func readEmbbStruct(val reflect.Value) {
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
 	for i := 0; i < val.NumField(); i++ {
 		// fmt.Println(val.Type().Field(i).Type.Kind())
 		f := val.Field(i)
@@ -49,7 +52,7 @@ func readEmbbStruct(val reflect.Value) {
 			for j := 0; j < f.Len(); j++ {
 				readEmbbStruct(f.Index(i))
 			}
-		case reflect.String:
+		case reflect.String, reflect.Int:
 			fmt.Printf("%v=%v\n", val.Type().Field(i).Name, val.Field(i))
 		}
 	}

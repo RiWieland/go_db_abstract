@@ -147,7 +147,9 @@ func main() {
 	customerTable.C = []customer{customerA, customerB}
 	//fmt.Println(customerTable)
 	//fmt.Println(reflect.TypeOf(customerA.age))
-	db.createTable(customerTable)
-	db.testCreate(orderTable)
-	//ReadStruct(orderTable)
+	//test := ExportEmbbStruct(orderTable)
+	//fmt.Println(test)
+	//db.createTable(customerTable)
+	//db.testCreate(orderTable)
+	ReadEmbbStruct(orderTable)
 }
