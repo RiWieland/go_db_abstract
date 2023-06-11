@@ -107,28 +107,24 @@ func (db database) createTable(t interface{}) {
 		f := val.Field(i)
 		switch f.Kind() {
 		case reflect.Slice:
-			fmt.Println("slice called")
-			for j := 0; j < f.Len(); j++ {
-				val := f.Index(i).Interface()
-				s := reflect.ValueOf(val)
-				for i := 0; i < s.NumField(); i++ {
-					t := s.Field(i)
-					switch t.Kind() {
-					case reflect.String:
-						s := fmt.Sprint(s.Type().Field(i).Name)
-						sqlStatement.WriteString(" \"" + s + "\" TEXT,")
 
-					case reflect.Int:
-						s := fmt.Sprint(s.Type().Field(i).Name)
-						sqlStatement.WriteString(" \"" + s + "\" INTEGER,")
+			val := f.Index(0).Interface()
+			s := reflect.ValueOf(val)
+			for i := 0; i < s.NumField(); i++ {
+				t := s.Field(i)
+				switch t.Kind() {
+				case reflect.String:
+					s := fmt.Sprint(s.Type().Field(i).Name)
+					sqlStatement.WriteString(" \"" + s + "\" TEXT,")
 
-					}
-
+				case reflect.Int:
+					s := fmt.Sprint(s.Type().Field(i).Name)
+					sqlStatement.WriteString(" \"" + s + "\" INTEGER,")
 				}
 			}
-
 		}
 	}
+
 	sz := len(sqlStatement.String())
 	ExSql := sqlStatement.String()
 	ExSql = ExSql[:sz-1] + ")"
