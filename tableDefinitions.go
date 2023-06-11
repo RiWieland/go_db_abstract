@@ -1,12 +1,10 @@
 package main
 
-type customerCollection struct {
-	Table
+type customerTable struct {
 	C []customer
 }
 
-type orderCollection struct {
-	Table
+type orderTable struct {
 	C []order
 }
 
