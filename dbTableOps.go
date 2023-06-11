@@ -12,6 +12,7 @@ type Table struct {
 	View bool
 	Column
 	Row
+	C []any
 }
 
 // Column defines the datataypes
@@ -79,45 +80,51 @@ func ReadStruct(st interface{}) []reflect.Value {
 			}
 		default:
 			retValues = append(retValues, val)
+			fmt.Printf("Call from func: %v=%v\n", val.Type().Field(i).Name, val.Field(i))
+
 		}
 	}
 	return retValues
 }
 
-/*
-// -> create slice of same type: (is this necessary?)
-sliceType := reflect.SliceOf(reflect.TypeOf(k))
-slice := reflect.MakeSlice(sliceType, 10, 10)
-// -> fill slice with custom elemens:
-*/
-
 // only int and string
-// on orderCollection -> make it for all tables
-func (db database) createTable(t orderCollection) {
+// func too loopy
+func (db database) createTable(t interface{}) {
+	val := reflect.ValueOf(t)
 
 	var sqlStatement strings.Builder
+	var View bool
 
-	if t.View != true {
-		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + t.Name + " (")
+	// extract name for Table:
+	n := reflect.TypeOf(t).Name()
+	if View != true {
+		sqlStatement.WriteString("CREATE TABLE IF NOT EXISTS " + n + " (")
 	} else {
-		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + t.Name + " (")
+		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + n + " (")
 	}
 
-	for _, order := range t.C {
-		//ReadEmbbStruct(orders)
-		res := ReadStruct(order)
+	for i := 0; i < val.NumField(); i++ {
+		f := val.Field(i)
+		switch f.Kind() {
+		case reflect.Slice:
+			fmt.Println("slice called")
+			for j := 0; j < f.Len(); j++ {
+				val := f.Index(i).Interface()
+				s := reflect.ValueOf(val)
+				for i := 0; i < s.NumField(); i++ {
+					t := s.Field(i)
+					switch t.Kind() {
+					case reflect.String:
+						s := fmt.Sprint(s.Type().Field(i).Name)
+						sqlStatement.WriteString(" \"" + s + "\" TEXT,")
 
-		for i, j := range res {
-			val := j.Field(i)
-			switch val.Kind() {
-			case reflect.String:
+					case reflect.Int:
+						s := fmt.Sprint(s.Type().Field(i).Name)
+						sqlStatement.WriteString(" \"" + s + "\" INTEGER,")
 
-				s := fmt.Sprint(j.Type().Field(i).Name)
-				sqlStatement.WriteString(" \"" + s + "\" TEXT,")
+					}
 
-			case reflect.Int:
-				s := fmt.Sprint(j.Type().Field(i).Name)
-				sqlStatement.WriteString(" \"" + s + "\" INTEGER,")
+				}
 			}
 
 		}
@@ -131,6 +138,7 @@ func (db database) createTable(t orderCollection) {
 		fmt.Println(err)
 	}
 	fmt.Println("Executed statement: " + ExSql)
+
 }
 
 func (t Table) insert() {

@@ -117,39 +117,13 @@ func main() {
 	ordersB.Amount = 1
 	ordersB.Shipped = true
 
-	/*
-		od := order{1, "name", "nn", "34", 3, true}
-		s := reflect.ValueOf(&od).Elem()
-		typeOfT := s.Type()
-		for i := 0; i < s.NumField(); i++ {
-			f := s.Field(i)
-			fmt.Printf("%d: %s %s = %v\n", i,
-				typeOfT.Field(i).Name, f.Type(), f.Interface())
-		}*/
+	customerTable := customerTable{}
 
-	// use promoted field for init
-	customerTableAbstract := Table{
-		Name: "Customer",
-		View: false,
-	}
-	customerTable := customerCollection{
-		Table: customerTableAbstract,
-	}
-
-	orderTableAbstract := Table{
-		Name: "Order",
-		View: false,
-	}
-	orderTable := orderCollection{
-		Table: orderTableAbstract,
-	}
+	orderTable := orderTable{}
 	orderTable.C = []order{ordersA, ordersB}
 	customerTable.C = []customer{customerA, customerB}
+	//db.createTable(orderTable)
 	db.createTable(orderTable)
-	/*
-		for _, orders := range orderTable.C {
-			//ReadEmbbStruct(orders)
-			ReadStruct(orders)
-		}*/
+	//ReadStruct(orderTable)
 
 }
