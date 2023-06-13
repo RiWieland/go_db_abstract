@@ -125,5 +125,10 @@ func main() {
 	//db.createTable(orderTable)
 	db.createTable(orderTable)
 	//ReadStruct(orderTable)
+	db.insert(orderTable)
+
+	//query := "Select * from ordertable"
+	//res, _ := db.instance.Exec(query)
+	//fmt.Println(res)
 
 }

@@ -136,7 +136,33 @@ func (db database) createTable(t interface{}) {
 
 // todo insert with custom type
 func (db database) insert(t interface{}) {
+	var sqlStatement strings.Builder
+	n := reflect.TypeOf(t).Name()
 
+	sqlStatement.WriteString("INSERT INTO " + n + "( ")
+
+	val := reflect.ValueOf(t)
+	f := val.Field(0)
+
+	for j := 0; j < f.Len(); j++ {
+		g := f.Index(j).Interface() // loop for elements
+		s := reflect.ValueOf(g)
+
+		for i := 0; i < s.NumField(); i++ {
+			//loop over the fields of the struct -> can we also build custom struct?
+			t := s.Field(i)
+
+			switch t.Kind() {
+			case reflect.String:
+				s := fmt.Sprint(s.Type().Field(i).Name)
+				sqlStatement.WriteString(" \"" + s + "\" TEXT,")
+
+			case reflect.Int:
+				s := fmt.Sprint(s.Type().Field(i).Name)
+				sqlStatement.WriteString(" \"" + s + "\" INTEGER,")
+			}
+		}
+	}
 }
 
 func (t Table) filter() {
