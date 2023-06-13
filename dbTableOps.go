@@ -87,10 +87,10 @@ func ReadStruct(st interface{}) []reflect.Value {
 	return retValues
 }
 
+// View not implemented
 // only int and string
 // func too loopy
 func (db database) createTable(t interface{}) {
-	val := reflect.ValueOf(t)
 
 	var sqlStatement strings.Builder
 	var View bool
@@ -103,25 +103,23 @@ func (db database) createTable(t interface{}) {
 		sqlStatement.WriteString("CREATE VIEW IF NOT EXISTS " + n + " (")
 	}
 
-	for i := 0; i < val.NumField(); i++ {
-		f := val.Field(i)
-		switch f.Kind() {
-		case reflect.Slice:
+	val := reflect.ValueOf(t)
+	//for i := 0; i < val.NumField(); i++ { // could be done without loop
+	f := val.Field(0)
+	//switch f.Kind() {
+	//case reflect.Slice:
+	g := f.Index(0).Interface() // interfering the schema requires only one element
+	s := reflect.ValueOf(g)
+	for i := 0; i < s.NumField(); i++ {
+		t := s.Field(i)
+		switch t.Kind() {
+		case reflect.String:
+			s := fmt.Sprint(s.Type().Field(i).Name)
+			sqlStatement.WriteString(" \"" + s + "\" TEXT,")
 
-			val := f.Index(0).Interface()
-			s := reflect.ValueOf(val)
-			for i := 0; i < s.NumField(); i++ {
-				t := s.Field(i)
-				switch t.Kind() {
-				case reflect.String:
-					s := fmt.Sprint(s.Type().Field(i).Name)
-					sqlStatement.WriteString(" \"" + s + "\" TEXT,")
-
-				case reflect.Int:
-					s := fmt.Sprint(s.Type().Field(i).Name)
-					sqlStatement.WriteString(" \"" + s + "\" INTEGER,")
-				}
-			}
+		case reflect.Int:
+			s := fmt.Sprint(s.Type().Field(i).Name)
+			sqlStatement.WriteString(" \"" + s + "\" INTEGER,")
 		}
 	}
 
@@ -134,21 +132,11 @@ func (db database) createTable(t interface{}) {
 		fmt.Println(err)
 	}
 	fmt.Println("Executed statement: " + ExSql)
-
 }
 
-func (t Table) insert() {
-	var sqlStatement strings.Builder
+// todo insert with custom type
+func (db database) insert(t interface{}) {
 
-	sqlStatement.WriteString("INSERT INTO " + t.name + "( ")
-
-	for key, element := range t.columnsType {
-		sqlStatement.WriteString(t.columnsName[key] + " " + element + ", ")
-	}
-	_, err := db.instance.Exec(sqlStatement.String())
-	if err != nil {
-		fmt.Println(err)
-	}
 }
 
 func (t Table) filter() {
