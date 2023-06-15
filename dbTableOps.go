@@ -135,10 +135,13 @@ func (db database) createTable(t interface{}) {
 }
 
 // todo insert with custom type
+// retriev with db-query?
 func (db database) insert(t interface{}) {
 	var sqlStatement strings.Builder
-	n := reflect.TypeOf(t).Name()
+	var sqlStatementTemp strings.Builder
 
+	n := reflect.TypeOf(t).Name()
+	sqlStatementTemp.WriteString("Values (")
 	sqlStatement.WriteString("INSERT INTO " + n + "( ")
 
 	val := reflect.ValueOf(t)
@@ -150,17 +153,13 @@ func (db database) insert(t interface{}) {
 
 		for i := 0; i < s.NumField(); i++ {
 			//loop over the fields of the struct -> can we also build custom struct?
-			t := s.Field(i)
+			t := fmt.Sprint(s.Field(i)) // values
 
-			switch t.Kind() {
-			case reflect.String:
-				s := fmt.Sprint(s.Type().Field(i).Name)
-				sqlStatement.WriteString(" \"" + s + "\" TEXT,")
+			sqlStatement.WriteString(t + ",")
 
-			case reflect.Int:
-				s := fmt.Sprint(s.Type().Field(i).Name)
-				sqlStatement.WriteString(" \"" + s + "\" INTEGER,")
-			}
+			g := fmt.Sprint(s.Type().Field(i).Name) // name
+			sqlStatement.WriteString(g + ",")
+
 		}
 	}
 }
