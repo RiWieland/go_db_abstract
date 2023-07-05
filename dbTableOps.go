@@ -137,12 +137,12 @@ func (db database) createTable(t interface{}) {
 // todo insert with custom type
 // retriev with db-query?
 func (db database) insert(t interface{}) {
-	var sqlStatement strings.Builder
-	var sqlStatementTemp strings.Builder
+	var sqlColumnList strings.Builder
+	var sqlValues strings.Builder
 
 	n := reflect.TypeOf(t).Name()
-	sqlStatementTemp.WriteString("Values (")
-	sqlStatement.WriteString("INSERT INTO " + n + "( ")
+	sqlValues.WriteString(" VALUES (")
+	sqlColumnList.WriteString("INSERT INTO " + n + "(")
 
 	val := reflect.ValueOf(t)
 	f := val.Field(0)
@@ -155,13 +155,24 @@ func (db database) insert(t interface{}) {
 			//loop over the fields of the struct -> can we also build custom struct?
 			t := fmt.Sprint(s.Field(i)) // values
 
-			sqlStatement.WriteString(t + ",")
+			sqlValues.WriteString(t + ",")
 
 			g := fmt.Sprint(s.Type().Field(i).Name) // name
-			sqlStatement.WriteString(g + ",")
-
+			sqlColumnList.WriteString(g + ",")
 		}
+
+		sqlValues.WriteString("),")
+
 	}
+	sz := len(sqlColumnList.String())
+	ExSql := sqlColumnList.String()
+	ExSql = ExSql[:sz-1] + ")"
+	tz := len(sqlValues.String())
+	ExSqlValues := sqlValues.String()
+	ExSqlValues = ExSqlValues[:tz-1] + ");"
+
+	fmt.Println("Executed statement: " + ExSql + ExSqlValues)
+
 }
 
 func (t Table) filter() {
