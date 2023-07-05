@@ -141,7 +141,6 @@ func (db database) insert(t interface{}) {
 	var sqlValues strings.Builder
 
 	n := reflect.TypeOf(t).Name()
-	sqlValues.WriteString(" VALUES (")
 	sqlColumnList.WriteString("INSERT INTO " + n + "(")
 
 	val := reflect.ValueOf(t)
@@ -150,7 +149,9 @@ func (db database) insert(t interface{}) {
 	for j := 0; j < f.Len(); j++ {
 		g := f.Index(j).Interface() // loop for elements
 		s := reflect.ValueOf(g)
-
+		if j == 0 {
+			sqlValues.WriteString(" VALUES (")
+		}
 		for i := 0; i < s.NumField(); i++ {
 			//loop over the fields of the struct -> can we also build custom struct?
 			t := fmt.Sprint(s.Field(i)) // values
@@ -158,11 +159,21 @@ func (db database) insert(t interface{}) {
 			sqlValues.WriteString(t + ",")
 
 			g := fmt.Sprint(s.Type().Field(i).Name) // name
-			sqlColumnList.WriteString(g + ",")
+			sqlColumnList.WriteString(g)
+
+			if i == s.NumField() {
+				sqlColumnList.WriteString("),")
+
+			} else {
+				sqlColumnList.WriteString(",")
+
+			}
+
 		}
-
-		sqlValues.WriteString("),")
-
+		if j == f.Len() {
+			//sqlValues.Reset()
+			sqlValues.WriteString("),")
+		}
 	}
 	sz := len(sqlColumnList.String())
 	ExSql := sqlColumnList.String()
