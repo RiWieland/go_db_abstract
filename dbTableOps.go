@@ -134,6 +134,29 @@ func (db database) createTable(t interface{}) {
 	fmt.Println("Executed statement: " + ExSql)
 }
 
+func retrievColumns(t interface{}) []string {
+	var sqlColumnList strings.Builder
+	var ColumnsList []string
+
+	val := reflect.ValueOf(t)
+	f := val.Field(0)
+
+	for j := 0; j < 1; j++ {
+		g := f.Index(j).Interface() // loop for elements
+		s := reflect.ValueOf(g)
+		for i := 0; i < s.NumField(); i++ {
+			//loop over the fields of the struct -> can we also build custom struct?
+
+			g := fmt.Sprint(s.Type().Field(i).Name) // name
+			sqlColumnList.WriteString(g)
+			ColumnsList = append(ColumnsList, g)
+		}
+	}
+
+	return ColumnsList
+
+}
+
 // todo insert with custom type
 // retriev with db-query?
 func (db database) insert(t interface{}) {
@@ -166,9 +189,7 @@ func (db database) insert(t interface{}) {
 
 			} else {
 				sqlColumnList.WriteString(",")
-
 			}
-
 		}
 		if j == f.Len() {
 			//sqlValues.Reset()
