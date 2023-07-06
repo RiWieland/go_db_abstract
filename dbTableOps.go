@@ -154,7 +154,6 @@ func retrievColumns(t interface{}) []string {
 	}
 
 	return ColumnsList
-
 }
 
 // todo insert with custom type
@@ -165,6 +164,14 @@ func (db database) insert(t interface{}) {
 
 	n := reflect.TypeOf(t).Name()
 	sqlColumnList.WriteString("INSERT INTO " + n + "(")
+
+	col := retrievColumns(t)
+	for _, c := range col {
+		sqlColumnList.WriteString(c + ",")
+	}
+	sz := len(sqlColumnList.String())
+	insertSQLExp := sqlColumnList.String()
+	insertSQLExp = insertSQLExp[:sz-1] + ")"
 
 	val := reflect.ValueOf(t)
 	f := val.Field(0)
@@ -180,30 +187,17 @@ func (db database) insert(t interface{}) {
 			t := fmt.Sprint(s.Field(i)) // values
 
 			sqlValues.WriteString(t + ",")
-
-			g := fmt.Sprint(s.Type().Field(i).Name) // name
-			sqlColumnList.WriteString(g)
-
-			if i == s.NumField() {
-				sqlColumnList.WriteString("),")
-
-			} else {
-				sqlColumnList.WriteString(",")
-			}
 		}
 		if j == f.Len() {
 			//sqlValues.Reset()
 			sqlValues.WriteString("),")
 		}
 	}
-	sz := len(sqlColumnList.String())
-	ExSql := sqlColumnList.String()
-	ExSql = ExSql[:sz-1] + ")"
 	tz := len(sqlValues.String())
 	ExSqlValues := sqlValues.String()
 	ExSqlValues = ExSqlValues[:tz-1] + ");"
 
-	fmt.Println("Executed statement: " + ExSql + ExSqlValues)
+	fmt.Println("Executed statement: " + insertSQLExp + ExSqlValues)
 
 }
 
